@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <title>หน้าแสดงการบ้าน</title>
+</head>
+<body>
+  <h1>แสดงรายการการบ้าน (กำลังพัฒนา)</h1>
+  <p>ยินดีต้อนรับ: <span id="username"></span></p>
+
+  <script>
+    const user = JSON.parse(localStorage.getItem("user"));
+    if (!user) {
+      location.href = "index.html";
+    } else {
+      document.getElementById("username").textContent = user.firstName + " " + user.lastName;
+    }
+  </script>
+</body>
+</html>
