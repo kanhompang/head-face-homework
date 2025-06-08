@@ -35,12 +35,15 @@
     </div>
 
     <script>
-      const user = JSON.parse(localStorage.getItem("user"));
-      const loading = document.getElementById("loading");
+      document.addEventListener("DOMContentLoaded", () => {
+        const user = JSON.parse(localStorage.getItem("user"));
+        const loading = document.getElementById("loading");
 
-      if (!user) {
-        window.location.href = "index.html";
-      } else {
+        if (!user) {
+          window.location.href = "index.html";
+          return;
+        }
+
         document.getElementById("user-info").innerHTML = `
           <p><strong>ชื่อ:</strong> ${user.firstName} ${user.lastName}</p>
           <p><strong>เลขที่:</strong> ${user.no}</p>
@@ -94,33 +97,33 @@
             list.innerHTML = homeworks
               .map(
                 (hw) => `
-              <div class="border border-gray-300 rounded-xl p-4">
-                <h3 class="text-lg font-semibold text-blue-700">${hw.subject}</h3>
-                <p><strong>รายละเอียด: </strong>${hw.title}</p>
-                <p><strong>กำหนดส่ง: </strong> ${hw.due_date}</p>
-                <p><strong>สถานะ: </strong> <span class="text-red-500">ยังไม่ส่ง</span></p>
-                <button
-                  onclick="markAsSubmitted('${hw.id}')"
-                  class="mt-2 bg-green-500 hover:bg-green-600 text-white py-1 px-3 rounded-lg"
-                >
-                  บันทึกว่าส่งแล้ว
-                </button>
-              </div>
-            `
+                <div class="border border-gray-300 rounded-xl p-4">
+                  <h3 class="text-lg font-semibold text-blue-700">${hw.subject}</h3>
+                  <p><strong>รายละเอียด: </strong>${hw.title}</p>
+                  <p><strong>กำหนดส่ง: </strong> ${hw.due_date}</p>
+                  <p><strong>สถานะ: </strong> <span class="text-red-500">ยังไม่ส่ง</span></p>
+                  <button
+                    onclick="markAsSubmitted('${hw.id}')"
+                    class="mt-2 bg-green-500 hover:bg-green-600 text-white py-1 px-3 rounded-lg"
+                  >
+                    บันทึกว่าส่งแล้ว
+                  </button>
+                </div>
+              `
               )
               .join("");
           }
         }
-      }
+
+        document.getElementById("logout-btn").addEventListener("click", () => {
+          localStorage.clear();
+          window.location.href = "index.html";
+        });
+      });
 
       function markAsSubmitted(hwId) {
         alert(`บันทึกว่าส่งการบ้าน: ${hwId} (ยังไม่เชื่อมกับระบบจริง)`);
       }
-
-      document.getElementById("logout-btn").addEventListener("click", () => {
-        localStorage.clear();
-        window.location.href = "index.html";
-      });
     </script>
   </body>
 </html>
