@@ -76,7 +76,7 @@
       document.getElementById("loading").style.display = "block";
 
       try {
-        const response = await fetch(`https://script.google.com/macros/s/URLของคุณ/exec?action=login&no=${no}&studentId=${studentId}`);
+        const response = await fetch(`https://script.google.com/macros/s/AKfycbxQyMf_zMNuZoa_JLqa2S5LJYgxd1HwDfnMw-3_FtMH-mN2Db72O4xfqpU17zg2mebPkw/exec?action=login&no=${no}&studentId=${studentId}`);
         const result = await response.json();
 
         if (result.status === "success") {
