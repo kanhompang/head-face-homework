@@ -47,47 +47,70 @@
           <p><strong>เลขประจำตัว:</strong> ${user.studentId}</p>
         `;
 
-        async function fetchHomework() {
+        checkLastUpdatedAndLoad();
+
+        async function checkLastUpdatedAndLoad() {
           loading.classList.remove("hidden");
 
           try {
-            const url = `https://script.google.com/macros/s/AKfycbxQyMf_zMNuZoa_JLqa2S5LJYgxd1HwDfnMw-3_FtMH-mN2Db72O4xfqpU17zg2mebPkw/exec?action=hw&no=${user.no}`;
-            const res = await fetch(url);
+            const res = await fetch("https://script.google.com/macros/s/AKfycbxQyMf_zMNuZoa_JLqa2S5LJYgxd1HwDfnMw-3_FtMH-mN2Db72O4xfqpU17zg2mebPkw/exec?action=lastUpdated");
             const data = await res.json();
 
-            if (data.status === "success") {
-              const list = document.getElementById("hw-list");
-              if (data.homework.length === 0) {
-                list.innerHTML = "<p class='text-gray-500'>ไม่มีการบ้าน</p>";
-              } else {
-                list.innerHTML = data.homework
-                  .map(
-                    (hw) => `
-                  <div class="border border-gray-300 rounded-xl p-4">
-                    <h3 class="text-lg font-semibold text-blue-700">${hw.subject}</h3>
-                    <p><strong>รายละเอียด: </strong>${hw.title}</p>
-                    <p><strong>กำหนดส่ง: </strong> ${hw.due_date}</p>
-                    <p><strong>สถานะ: </strong> <span class="text-red-500">ยังไม่ส่ง</span></p>
-                    <button
-                      onclick="markAsSubmitted('${hw.id}')"
-                      class="mt-2 bg-green-500 hover:bg-green-600 text-white py-1 px-3 rounded-lg"
-                    >
-                      บันทึกว่าส่งแล้ว
-                    </button>
-                  </div>
-                `
-                  )
-                  .join("");
-              }
+            const serverUpdated = data.last_updated;
+            const localUpdated = localStorage.getItem("last_updated");
+            const localHW = localStorage.getItem("hw_data");
+
+            if (localUpdated === serverUpdated && localHW) {
+              renderHomework(JSON.parse(localHW));
+            } else {
+              await fetchHomework(serverUpdated);
             }
           } catch (err) {
-            alert("เกิดข้อผิดพลาดในการโหลดข้อมูลการบ้าน");
+            alert("เกิดข้อผิดพลาดในการตรวจสอบเวลาอัปเดต");
           } finally {
             loading.classList.add("hidden");
           }
         }
 
-        fetchHomework();
+        async function fetchHomework(serverUpdated) {
+          const url = `https://script.google.com/macros/s/AKfycbxQyMf_zMNuZoa_JLqa2S5LJYgxd1HwDfnMw-3_FtMH-mN2Db72O4xfqpU17zg2mebPkw/exec?action=hw&no=${user.no}`;
+          const res = await fetch(url);
+          const data = await res.json();
+
+          if (data.status === "success") {
+            localStorage.setItem("hw_data", JSON.stringify(data.homework));
+            localStorage.setItem("last_updated", serverUpdated);
+            renderHomework(data.homework);
+          } else {
+            alert("โหลดข้อมูลการบ้านไม่สำเร็จ");
+          }
+        }
+
+        function renderHomework(homeworks) {
+          const list = document.getElementById("hw-list");
+          if (homeworks.length === 0) {
+            list.innerHTML = "<p class='text-gray-500'>ไม่มีการบ้าน</p>";
+          } else {
+            list.innerHTML = homeworks
+              .map(
+                (hw) => `
+              <div class="border border-gray-300 rounded-xl p-4">
+                <h3 class="text-lg font-semibold text-blue-700">${hw.subject}</h3>
+                <p><strong>รายละเอียด: </strong>${hw.title}</p>
+                <p><strong>กำหนดส่ง: </strong> ${hw.due_date}</p>
+                <p><strong>สถานะ: </strong> <span class="text-red-500">ยังไม่ส่ง</span></p>
+                <button
+                  onclick="markAsSubmitted('${hw.id}')"
+                  class="mt-2 bg-green-500 hover:bg-green-600 text-white py-1 px-3 rounded-lg"
+                >
+                  บันทึกว่าส่งแล้ว
+                </button>
+              </div>
+            `
+              )
+              .join("");
+          }
+        }
       }
 
       function markAsSubmitted(hwId) {
@@ -95,7 +118,7 @@
       }
 
       document.getElementById("logout-btn").addEventListener("click", () => {
-        localStorage.removeItem("user");
+        localStorage.clear();
         window.location.href = "index.html";
       });
     </script>
