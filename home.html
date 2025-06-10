@@ -1,135 +1,135 @@
-<!-- ... (ส่วนบนเหมือนเดิม) -->
-<script>
-  document.addEventListener("DOMContentLoaded", () => {
-    const user = JSON.parse(localStorage.getItem("user"));
-    const loading = document.getElementById("loading");
+<!DOCTYPE html>
+<html lang="th">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>หน้าหลัก - HEAD FACE</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+  </head>
+  <body class="bg-gradient-to-br from-blue-100 to-blue-300 min-h-screen">
+    <!-- Header -->
+    <div class="bg-white shadow-md py-4 px-6 flex justify-between items-center">
+      <h1 class="text-2xl font-bold text-blue-700">HEAD FACE</h1>
+      <button
+        id="logout-btn"
+        class="bg-red-500 hover:bg-red-600 text-white px-4 py-1 rounded-xl font-semibold"
+      >
+        ล็อกเอาท์
+      </button>
+    </div>
 
-    if (!user) {
-      window.location.href = "index.html";
-      return;
-    }
+    <!-- Main Content -->
+    <div class="max-w-4xl mx-auto mt-8 px-4">
+      <div class="bg-white rounded-2xl shadow-xl p-6">
+        <h2 class="text-xl font-bold text-blue-700 mb-4">ข้อมูลของคุณ</h2>
+        <div id="user-info" class="mb-6 text-gray-700"></div>
 
-    document.getElementById("user-info").innerHTML = `
-      <p><strong>ชื่อ:</strong> ${user.firstName} ${user.lastName}</p>
-      <p><strong>เลขที่:</strong> ${user.no}</p>
-      <p><strong>เลขประจำตัว:</strong> ${user.studentId}</p>
-    `;
+        <h2 class="text-xl font-bold text-blue-700 mb-4">รายการการบ้าน</h2>
+        <div id="hw-list" class="space-y-4"></div>
+      </div>
+    </div>
 
-    checkLastUpdatedAndLoad();
+    <!-- Loading -->
+    <div id="loading" class="fixed inset-0 bg-white bg-opacity-80 flex items-center justify-center hidden z-50">
+      <div class="animate-spin rounded-full h-16 w-16 border-t-4 border-blue-500 border-solid"></div>
+    </div>
 
-    async function checkLastUpdatedAndLoad() {
-      loading.classList.remove("hidden");
+    <script>
+      const user = JSON.parse(localStorage.getItem("user"));
+      const loading = document.getElementById("loading");
 
-      try {
-        const res = await fetch("https://script.google.com/macros/s/AKfycbxQyMf_zMNuZoa_JLqa2S5LJYgxd1HwDfnMw-3_FtMH-mN2Db72O4xfqpU17zg2mebPkw/exec?action=lastUpdated");
+      if (!user) {
+        window.location.href = "index.html";
+      } else {
+        document.getElementById("user-info").innerHTML = `
+          <p><strong>ชื่อ:</strong> ${user.firstName} ${user.lastName}</p>
+          <p><strong>เลขที่:</strong> ${user.no}</p>
+          <p><strong>เลขประจำตัว:</strong> ${user.studentId}</p>
+        `;
+
+        checkLastUpdatedAndLoad();
+      }
+
+      async function checkLastUpdatedAndLoad() {
+        loading.classList.remove("hidden");
+
+        try {
+          const res = await fetch("https://script.google.com/macros/s/AKfycbxQyMf_zMNuZoa_JLqa2S5LJYgxd1HwDfnMw-3_FtMH-mN2Db72O4xfqpU17zg2mebPkw/exec?action=lastUpdated");
+          const data = await res.json();
+
+          const serverUpdated = data.last_updated;
+          const localUpdated = localStorage.getItem("last_updated");
+          const localHW = localStorage.getItem("hw_data");
+
+          if (localUpdated === serverUpdated && localHW) {
+            renderHomework(JSON.parse(localHW));
+          } else {
+            await fetchHomework(serverUpdated);
+          }
+        } catch (err) {
+          alert("เกิดข้อผิดพลาดในการตรวจสอบเวลาอัปเดต");
+        } finally {
+          loading.classList.add("hidden");
+        }
+      }
+
+      async function fetchHomework(serverUpdated) {
+        const url = `https://script.google.com/macros/s/AKfycbxQyMf_zMNuZoa_JLqa2S5LJYgxd1HwDfnMw-3_FtMH-mN2Db72O4xfqpU17zg2mebPkw/exec?action=hw&no=${user.no}`;
+        const res = await fetch(url);
         const data = await res.json();
 
-        const serverUpdated = data.last_updated;
-        const localUpdated = localStorage.getItem("last_updated");
-        const localHW = localStorage.getItem("hw_data");
-
-        if (localUpdated === serverUpdated && localHW) {
-          renderHomework(JSON.parse(localHW));
+        if (data.status === "success") {
+          localStorage.setItem("hw_data", JSON.stringify(data.homework));
+          localStorage.setItem("last_updated", serverUpdated);
+          renderHomework(data.homework);
         } else {
-          await fetchHomework(serverUpdated);
+          alert("โหลดข้อมูลการบ้านไม่สำเร็จ");
         }
-      } catch (err) {
-        alert("เกิดข้อผิดพลาดในการตรวจสอบเวลาอัปเดต");
-      } finally {
-        loading.classList.add("hidden");
       }
-    }
 
-    async function fetchHomework(serverUpdated) {
-      const url = `https://script.google.com/macros/s/AKfycbxQyMf_zMNuZoa_JLqa2S5LJYgxd1HwDfnMw-3_FtMH-mN2Db72O4xfqpU17zg2mebPkw/exec?action=hw&no=${user.no}`;
-      const res = await fetch(url);
-      const data = await res.json();
-
-      if (data.status === "success") {
-        localStorage.setItem("hw_data", JSON.stringify(data.homework));
-        localStorage.setItem("last_updated", serverUpdated);
-        renderHomework(data.homework);
-      } else {
-        alert("โหลดข้อมูลการบ้านไม่สำเร็จ");
+      function renderHomework(homeworks) {
+        const list = document.getElementById("hw-list");
+        if (homeworks.length === 0) {
+          list.innerHTML = "<p class='text-gray-500'>ไม่มีการบ้าน</p>";
+        } else {
+          list.innerHTML = homeworks
+            .map(
+              (hw) => `
+            <div class="border border-gray-300 rounded-xl p-4">
+              <h3 class="text-lg font-semibold text-blue-700">${hw.subject}</h3>
+              <p><strong>รายละเอียด: </strong>${hw.title}</p>
+              <p><strong>กำหนดส่ง: </strong> ${hw.due_date}</p>
+              <p><strong>สถานะ: </strong> <span class="text-red-500">ยังไม่ส่ง</span></p>
+              <button
+                onclick="markAsSubmitted('${hw.id}')"
+                class="mt-2 bg-green-500 hover:bg-green-600 text-white py-1 px-3 rounded-lg"
+              >
+                บันทึกว่าส่งแล้ว
+              </button>
+            </div>
+          `
+            )
+            .join("");
+        }
       }
-    }
 
-    function renderHomework(homeworks) {
-      const list = document.getElementById("hw-list");
-      if (homeworks.length === 0) {
-        list.innerHTML = "<p class='text-gray-500'>ไม่มีการบ้าน</p>";
-      } else {
-        list.innerHTML = homeworks
-          .map((hw) => {
-            const isSubmitted = hw.status === "submitted";
-            return `
-              <div class="border border-gray-300 rounded-xl p-4" id="hw-${hw.id}">
-                <h3 class="text-lg font-semibold text-blue-700">${hw.subject}</h3>
-                <p><strong>รายละเอียด: </strong>${hw.title}</p>
-                <p><strong>กำหนดส่ง: </strong> ${hw.due_date}</p>
-                <p><strong>สถานะ: </strong> 
-                  <span class="${isSubmitted ? "text-green-500" : "text-red-500"}">
-                    ${isSubmitted ? "ส่งแล้ว" : "ยังไม่ส่ง"}
-                  </span>
-                </p>
-                ${
-                  isSubmitted
-                    ? ""
-                    : `<button
-                        onclick="markAsSubmitted('${hw.id}')"
-                        class="mt-2 bg-green-500 hover:bg-green-600 text-white py-1 px-3 rounded-lg"
-                      >
-                        บันทึกว่าส่งแล้ว
-                      </button>`
-                }
-              </div>`;
-          })
-          .join("");
-      }
-    }
-
-    document.getElementById("logout-btn").addEventListener("click", () => {
-      localStorage.clear();
-      window.location.href = "index.html";
-    });
-
-    // ทำให้ markAsSubmitted เข้าถึง user ได้
-    window.markAsSubmitted = async function (hwId) {
-      if (!confirm("คุณแน่ใจหรือไม่ว่าต้องการบันทึกว่าส่งแล้ว?")) return;
-
-      loading.classList.remove("hidden");
-
-      try {
-        const url = `https://script.google.com/macros/s/AKfycbxQyMf_zMNuZoa_JLqa2S5LJYgxd1HwDfnMw-3_FtMH-mN2Db72O4xfqpU17zg2mebPkw/exec?action=submit&studentId=${user.studentId}&hwId=${hwId}`;
+      async function markAsSubmitted(hwId) {
+        const url = `https://script.google.com/macros/s/AKfycbxQyMf_zMNuZoa_JLqa2S5LJYgxd1HwDfnMw-3_FtMH-mN2Db72O4xfqpU17zg2mebPkw/exec?action=submit&no=${user.no}&hwId=${hwId}`;
         const res = await fetch(url);
-        const result = await res.json();
-
-        if (result.status === "success") {
-          // อัปเดต UI ทันที
-          const hwCard = document.getElementById(`hw-${hwId}`);
-          if (hwCard) {
-            hwCard.querySelector("span").innerText = "ส่งแล้ว";
-            hwCard.querySelector("span").className = "text-green-500";
-            const btn = hwCard.querySelector("button");
-            if (btn) btn.remove();
-          }
-          // อัปเดต localStorage ด้วย
-          const hwData = JSON.parse(localStorage.getItem("hw_data"));
-          const updated = hwData.map((hw) =>
-            hw.id === hwId ? { ...hw, status: "submitted" } : hw
-          );
-          localStorage.setItem("hw_data", JSON.stringify(updated));
-
-          alert("บันทึกเรียบร้อยแล้ว!");
+        const data = await res.json();
+        if (data.status === "success") {
+          alert("บันทึกว่าส่งแล้วเรียบร้อย");
+          localStorage.removeItem("last_updated"); // บังคับโหลดใหม่
+          checkLastUpdatedAndLoad();
         } else {
-          alert("บันทึกไม่สำเร็จ: " + result.message);
+          alert("ไม่สามารถบันทึกได้");
         }
-      } catch (err) {
-        alert("เกิดข้อผิดพลาดในการส่งข้อมูล");
-      } finally {
-        loading.classList.add("hidden");
       }
-    };
-  });
-</script>
 
+      document.getElementById("logout-btn").addEventListener("click", () => {
+        localStorage.clear();
+        window.location.href = "index.html";
+      });
+    </script>
+  </body>
+</html>
