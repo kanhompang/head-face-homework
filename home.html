@@ -128,10 +128,9 @@
   const confirmSubmit = confirm("ยืนยันว่าคุณได้ส่งการบ้านแล้ว?");
   if (!confirmSubmit) return;
 
-  const url = `https://script.google.com/macros/s/AKfycbxQyMf_zMNuZoa_JLqa2S5LJYgxd1HwDfnMw-3_FtMH-mN2Db72O4xfqpU17zg2mebPkw/exec?action=submit&hw_id=${hwId}&no=${user.no}`;
 
   try {
-    const res = await fetch(url);
+    const res = await fetch("https://script.google.com/macros/s/AKfycbxQyMf_zMNuZoa_JLqa2S5LJYgxd1HwDfnMw-3_FtMH-mN2Db72O4xfqpU17zg2mebPkw/exec?action=submit&hw_id=${hwId}&no=${user.no}");
     const data = await res.json();
 
     if (data.status === "success") {
