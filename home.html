@@ -88,48 +88,75 @@
       }
 
       function renderHomework(homeworks) {
-        const list = document.getElementById("hw-list");
-        if (homeworks.length === 0) {
-          list.innerHTML = "<p class='text-gray-500'>ไม่มีการบ้าน</p>";
-        } else {
-          list.innerHTML = homeworks
-            .map(
-              (hw) => `
+  const list = document.getElementById("hw-list");
+  if (homeworks.length === 0) {
+    list.innerHTML = "<p class='text-gray-500'>ไม่มีการบ้าน</p>";
+  } else {
+    list.innerHTML = homeworks
+      .map(
+        (hw) => {
+          const isSubmitted = hw.submitted || (hw.submitted_no || "").includes(user.no.toString());
+          return `
             <div class="border border-gray-300 rounded-xl p-4">
               <h3 class="text-lg font-semibold text-blue-700">${hw.subject}</h3>
               <p><strong>รายละเอียด: </strong>${hw.title}</p>
               <p><strong>กำหนดส่ง: </strong> ${hw.due_date}</p>
-              <p><strong>สถานะ: </strong> <span class="text-red-500">ยังไม่ส่ง</span></p>
-              <button
-                onclick="markAsSubmitted('${hw.id}')"
-                class="mt-2 bg-green-500 hover:bg-green-600 text-white py-1 px-3 rounded-lg"
-              >
-                บันทึกว่าส่งแล้ว
-              </button>
+              <p><strong>สถานะ: </strong> 
+                <span class="${isSubmitted ? "text-green-600" : "text-red-500"}">
+                  ${isSubmitted ? "ส่งแล้ว" : "ยังไม่ส่ง"}
+                </span>
+              </p>
+              ${
+                isSubmitted
+                  ? ""
+                  : `<button
+                      onclick="markAsSubmitted('${hw.id}')"
+                      class="mt-2 bg-green-500 hover:bg-green-600 text-white py-1 px-3 rounded-lg"
+                    >
+                      บันทึกว่าส่งแล้ว
+                    </button>`
+              }
             </div>
-          `
-            )
-            .join("");
+          `;
         }
-      }
+      )
+      .join("");
+  }
+}
 
-      async function markAsSubmitted(hwId) {
-        const url = `https://script.google.com/macros/s/AKfycbxQyMf_zMNuZoa_JLqa2S5LJYgxd1HwDfnMw-3_FtMH-mN2Db72O4xfqpU17zg2mebPkw/exec?action=submit&no=${user.no}&hwId=${hwId}`;
-        const res = await fetch(url);
-        const data = await res.json();
-        if (data.status === "success") {
-          alert("บันทึกว่าส่งแล้วเรียบร้อย");
-          localStorage.removeItem("last_updated"); // บังคับโหลดใหม่
-          checkLastUpdatedAndLoad();
-        } else {
-          alert("ไม่สามารถบันทึกได้");
+     async function markAsSubmitted(hwId) {
+  const confirmSubmit = confirm("ยืนยันว่าคุณได้ส่งการบ้านแล้ว?");
+  if (!confirmSubmit) return;
+
+  const url = `https://script.google.com/macros/s/AKfycbxQyMf_zMNuZoa_JLqa2S5LJYgxd1HwDfnMw-3_FtMH-mN2Db72O4xfqpU17zg2mebPkw/exec?action=submit&hw_id=${hwId}&no=${user.no}`;
+
+  try {
+    const res = await fetch(url);
+    const data = await res.json();
+
+    if (data.status === "success") {
+      alert("ส่งการบ้านสำเร็จ!");
+
+      // อัปเดต localStorage (อัปเดตสถานะในข้อมูล)
+      const hwList = JSON.parse(localStorage.getItem("hw_data"));
+      const updatedList = hwList.map(hw => {
+        if (hw.id === hwId) {
+          hw.submitted = true; // สมมุติเราจะเช็กจาก field นี้
         }
-      }
-
-      document.getElementById("logout-btn").addEventListener("click", () => {
-        localStorage.clear();
-        window.location.href = "index.html";
+        return hw;
       });
+      localStorage.setItem("hw_data", JSON.stringify(updatedList));
+
+      // อัปเดตบนหน้าเว็บ
+      renderHomework(updatedList);
+    } else {
+      alert("ส่งการบ้านไม่สำเร็จ");
+    }
+  } catch (err) {
+    alert("เกิดข้อผิดพลาดในการส่งการบ้าน");
+  }
+}
+
     </script>
   </body>
 </html>
