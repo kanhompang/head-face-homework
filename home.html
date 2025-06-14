@@ -6,6 +6,43 @@
     <title>หน้าหลัก - HEAD FACE</title>
     <script src="https://cdn.tailwindcss.com"></script>
   </head>
+    <body class="bg-gradient-to-br from-blue-100 to-blue-300 min-h-screen flex items-center justify-center">
+
+    <!-- กรอบข้อความ -->
+    <div class="bg-white rounded-2xl shadow-2xl p-6 max-w-xl w-full">
+      <div class="text-xl text-blue-800 font-semibold min-h-[3rem]" id="typing-text"></div>
+    </div>
+
+    <script>
+      const messages = [
+        "🎓 สวัสดี! ระบบ HEAD FACE พร้อมช่วยเตือนการบ้านให้คุณทุกวัน",
+        "⏰ อย่าลืม! การบ้านใกล้ถึงกำหนดส่งแล้ว ตรวจสอบได้ทันทีที่นี่",
+        "💡 ใช้งานง่าย ผูกกับ LINE และอัปเดตแบบเรียลไทม์"
+      ];
+
+      let msgIndex = 0;
+      let charIndex = 0;
+      const typingElement = document.getElementById("typing-text");
+
+      function typeMessage() {
+        const currentMessage = messages[msgIndex];
+        if (charIndex < currentMessage.length) {
+          typingElement.textContent += currentMessage[charIndex];
+          charIndex++;
+          setTimeout(typeMessage, 40); // ความเร็วพิมพ์
+        } else {
+          // พักข้อความไว้สักพัก แล้วค่อยเปลี่ยนไปข้อความถัดไป
+          setTimeout(() => {
+            typingElement.textContent = "";
+            charIndex = 0;
+            msgIndex = (msgIndex + 1) % messages.length; // วนลูปข้อความ
+            typeMessage();
+          }, 2000); // แสดงข้อความค้างไว้ 2 วิ
+        }
+      }
+
+      typeMessage();
+    </script>
   <body class="bg-gradient-to-br from-blue-100 to-blue-300 min-h-screen">
     <!-- Header -->
     <div class="bg-white shadow-md py-4 px-6 flex justify-between items-center">
