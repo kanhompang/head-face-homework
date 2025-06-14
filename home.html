@@ -17,43 +17,65 @@
         ล็อกเอาท์
       </button>
     </div>
+<!-- กล่องข้อความด้านบน -->
+<div class="max-w-4xl mx-auto mt-4 px-4">
+  <div class="bg-white rounded-2xl shadow-lg p-4 text-blue-800 font-semibold text-lg min-h-[60px]">
+    <div id="typewriter"></div>
+  </div>
+</div>
 
-    <!-- กรอบข้อความ -->
-    <div class="bg-gradient-to-br from-blue-100 to-blue-300 min-h-screen flex items-center justify-center py-15">
-      <div class="text-xl text-blue-800 font-semibold min-h-[3rem]" id="typing-text"></div>
-    </div>
+<script>
+  const messages = [
+    "วันนี้ก็สู้ ๆ นะ!",
+    "อย่าลืมส่งการบ้านล่ะ!",
+    "เหนื่อยก็พัก แต่อย่าหยุดนะ",
+    "ระบบนี้ฟรีนะครับ ใช้ได้เลย!",
+    "ถ้าชอบระบบนี้ แชร์ให้เพื่อนด้วยนะ 😄",
+    "อยากได้ระบบแจ้งเตือนเพิ่มไหม? ติดต่อแอดมินได้เลย!",
+    "ขอบคุณที่ใช้ HEAD FACE ❤️",
+    "คุณเก่งมากที่ใช้ระบบนี้ทุกวัน!",
+    "พรุ่งนี้มีการบ้านไหมนะ? กดดูเลย!",
+    "จำไว้ว่า...ทุกความพยายามไม่สูญเปล่า ✨"
+  ];
 
-    <script>
-      const messages = [
-        "🎓 สวัสดี! ระบบ HEAD FACE พร้อมช่วยเตือนการบ้านให้คุณทุกวัน",
-        "⏰ อย่าลืม! การบ้านใกล้ถึงกำหนดส่งแล้ว ตรวจสอบได้ทันทีที่นี่",
-        "💡 ใช้งานง่าย ผูกกับ LINE และอัปเดตแบบเรียลไทม์!"
-      ];
+  let currentMessage = 0;
+  let charIndex = 0;
+  const typeTarget = document.getElementById("typewriter");
 
-      let msgIndex = 0;
-      let charIndex = 0;
-      const typingElement = document.getElementById("typing-text");
+  function typeWriter() {
+    const message = messages[currentMessage];
+    if (charIndex < message.length) {
+      typeTarget.innerHTML += message.charAt(charIndex);
+      charIndex++;
+      setTimeout(typeWriter, 50); // ความเร็วพิมพ์
+    } else {
+      setTimeout(() => {
+        // ลบข้อความเดิมช้า ๆ
+        deleteMessage();
+      }, 2500); // พัก 2.5 วินาทีก่อนลบ
+    }
+  }
 
-      function typeMessage() {
-        const currentMessage = messages[msgIndex];
-        if (charIndex < currentMessage.length) {
-          typingElement.textContent += currentMessage[charIndex];
-          charIndex++;
-          setTimeout(typeMessage, 40); // ความเร็วพิมพ์
-        } else {
-          // พักข้อความไว้สักพัก แล้วค่อยเปลี่ยนไปข้อความถัดไป
-          setTimeout(() => {
-            typingElement.textContent = "";
-            charIndex = 0;
-            msgIndex = (msgIndex + 1) % messages.length; // วนลูปข้อความ
-            typeMessage();
-          }, 2000); // แสดงข้อความค้างไว้ 2 วิ
-        }
-      }
+  function deleteMessage() {
+    const message = messages[currentMessage];
+    if (charIndex > 0) {
+      typeTarget.innerHTML = message.substring(0, charIndex - 1);
+      charIndex--;
+      setTimeout(deleteMessage, 30); // ความเร็วลบ
+    } else {
+      // เปลี่ยนไปข้อความถัดไป
+      currentMessage = (currentMessage + 1) % messages.length;
+      setTimeout(typeWriter, 300);
+    }
+  }
 
-      typeMessage();
-    </script>
-    
+  // เริ่มทำงาน
+  document.addEventListener("DOMContentLoaded", () => {
+    typeWriter();
+  });
+</script>
+
+
     <!-- Main Content -->
     <div class="max-w-4xl mx-auto mt-8 px-4">
       <div class="bg-white rounded-2xl shadow-xl p-6">
