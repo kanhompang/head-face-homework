@@ -90,14 +90,13 @@
 
 function renderHomework(homeworks) {
   const list = document.getElementById("hw-list");
-  const no = user.no.toString(); // เลขที่ผู้ใช้
+  const no = user.no.toString().trim();
 
   if (homeworks.length === 0) {
     list.innerHTML = "<p class='text-gray-500'>ไม่มีการบ้าน</p>";
   } else {
     list.innerHTML = homeworks
       .map((hw) => {
-        // แปลง submitted ให้กลายเป็น array ของเลขที่
         const submittedList = (hw.submitted || "").toString().split(/\s+/);
         const isSubmitted = submittedList.includes(no);
 
@@ -126,6 +125,8 @@ function renderHomework(homeworks) {
       })
       .join("");
   }
+}
+
 }
 
 
