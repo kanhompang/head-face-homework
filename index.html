@@ -36,6 +36,15 @@
     }
   </style>
 </head>
+  <script>
+    function openModal() {
+      document.getElementById("upgradeModal").classList.remove("hidden");
+    }
+
+    function closeModal() {
+      document.getElementById("upgradeModal").classList.add("hidden");
+    }
+  </script>
 <body class="bg-gradient-to-br from-blue-100 to-blue-300 min-h-screen">
 
   <!-- Header มุมบนซ้าย -->
@@ -53,14 +62,44 @@
 
       <!-- ปุ่มสองปุ่มข้างกัน -->
       <div class="flex justify-center gap-6">
-        <a
-          href="login.html"
-          class="inline-block bg-blue-700 hover:bg-blue-800 text-white font-semibold px-8 py-3 rounded-xl shadow-md transition duration-300"
-        >
-          เข้าสู่ระบบ
-        </a>
+        <div class="flex justify-center gap-6">
+          <a
+            href="login.html"
+            class="inline-block bg-blue-700 hover:bg-blue-800 text-white font-semibold px-8 py-3 rounded-xl shadow-md transition duration-300"
+          >
+            เข้าสู่ระบบ
+          </a>
 
-        <a href="https://liff.line.me/2007333047-XVaQjnmO" class="btn-upgrade">อัปเกรด</a>
+          <!-- ปุ่มอัปเกรด -->
+          <a href="#" onclick="openModal()" class="btn-upgrade">อัปเกรด</a>
+
+          <!-- Modal -->
+          <div id="upgradeModal" class="fixed inset-0 bg-black bg-opacity-40 z-50 flex items-center justify-center hidden">
+            <div class="bg-white rounded-xl shadow-2xl max-w-sm w-full p-6 text-center">
+              <h2 class="text-xl font-bold text-blue-800 mb-4">เลือกการใช้งาน</h2>
+              <p class="text-gray-600 mb-6">กรุณาเลือกว่าคุณต้องการทำอะไร</p>
+              <div class="space-y-3">
+                <a
+                  href="https://liff.line.me/2007333047-XVaQjnmO"
+                  class="block w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 rounded-xl transition"
+                >
+                  ลงทะเบียน
+                </a>
+                <a
+                  href="https://form.jotform.com/251154265951053"
+                  class="block w-full bg-purple-600 hover:bg-purple-700 text-white font-semibold py-2 rounded-xl transition"
+                >
+                  ต่ออายุการใช้งาน
+                </a>
+                <button
+                  onclick="closeModal()"
+                  class="w-full text-sm text-gray-500 hover:text-gray-700 mt-4"
+                >
+                  ยกเลิก
+                </button>
+              </div>
+            </div>
+          </div>
       </div>
     </div>
   </div>
