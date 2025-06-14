@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>HEAD FACE - ปุ่มอัปเกรด</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    .logo-img {
+      width: 60px;
+      height: 60px;
+      
+      object-fit: contain;
+      background: none;
+    }
+
+    .btn-upgrade {
+      padding: 0.5rem 2rem;
+      border-radius: 1rem;
+      border: 2px solid transparent;
+      background-color: white;
+      color: #4f46e5;
+      font-weight: 600;
+      font-size: 1.125rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: inline-block;
+      user-select: none;
+      box-shadow: 0 2px 6px rgb(79 70 229 / 0.3);
+      border-image: linear-gradient(90deg, #4f46e5, #9333ea) 1;
+    }
+
+    .btn-upgrade:hover {
+      background: linear-gradient(90deg, #4f46e5, #9333ea);
+      color: white;
+      box-shadow: 0 4px 12px rgb(147 51 234 / 0.6);
+    }
+  </style>
+</head>
+<body class="bg-gradient-to-br from-blue-100 to-blue-300 min-h-screen">
+
+  <!-- Header มุมบนซ้าย -->
+  <div class="fixed top-4 left-4 flex items-center gap-3 z-50">
+    <img src="logo.png" alt="โลโก้" class="logo-img">
+    <span class="text-xl font-bold text-blue-900">HEAD FACE</span>
+  </div>
+
+  <!-- กล่องตรงกลาง -->
+  <div class="flex items-center justify-center min-h-screen pt-20">
+    <div class="bg-white rounded-xl shadow-2xl p-10 max-w-lg w-full text-center space-y-6">
+
+      <!-- ข้อความพิมพ์ทีละตัว -->
+      <p id="typing-text" class="text-blue-700 text-lg min-h-[72px] whitespace-pre-wrap"></p>
+
+      <!-- ปุ่มสองปุ่มข้างกัน -->
+      <div class="flex justify-center gap-6">
+        <a
+          href="index.html"
+          class="inline-block bg-blue-700 hover:bg-blue-800 text-white font-semibold px-8 py-3 rounded-xl shadow-md transition duration-300"
+        >
+          เข้าสู่ระบบ
+        </a>
+
+        <a href="https://liff.line.me/2007333047-XVaQjnmO" class="btn-upgrade">อัปเกรด</a>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const textElement = document.getElementById('typing-text');
+    const message = "ระบบแจ้งการบ้านสุดล้ำ พร้อมฟีเจอร์แจ้งเตือนทันใจ\nตอบโจทย์ทุกความต้องการของนักเรียนและครู";
+    let index = 0;
+
+    function typeWriter() {
+      if (index < message.length) {
+        textElement.textContent += message.charAt(index);
+        index++;
+        setTimeout(typeWriter, 40);
+      }
+    }
+
+    window.onload = () => {
+      typeWriter();
+    };
+  </script>
+
+</body>
+</html>
