@@ -130,7 +130,7 @@
 
 
   try {
-    const url = `https://script.google.com/macros/s/AKfycbxQyMf_zMNuZoa_JLqa2S5LJYgxd1HwDfnMw-3_FtMH-mN2Db72O4xfqpU17zg2mebPkw/exec?action=submit&no=${user.no}&hwId=${hwId}`
+    const url = `https://script.google.com/macros/s/AKfycbxQyMf_zMNuZoa_JLqa2S5LJYgxd1HwDfnMw-3_FtMH-mN2Db72O4xfqpU17zg2mebPkw/exec?action=submit&no=${user.no}&hw_id=${hwId}`
     const res = await fetch(url);
     const data = await res.json();
 
