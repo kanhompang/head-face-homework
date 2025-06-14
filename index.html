@@ -44,6 +44,12 @@
     </div>
 
     <script>
+      // เช็คว่า localStorage มี user อยู่แล้วไหม
+    const existingUser = localStorage.getItem("user");
+    if (existingUser) {
+  // ถ้ามีแล้วก็ไปหน้า home เลย
+        window.location.href = "home.html";
+}
       const form = document.getElementById("login-form");
       const loadingScreen = document.getElementById("loading-screen");
 
