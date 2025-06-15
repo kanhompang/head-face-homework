@@ -9,7 +9,7 @@
   <body class="bg-gradient-to-br from-blue-100 to-blue-300 min-h-screen">
     <!-- Header -->
     <div class="bg-white shadow-md py-4 px-6 flex justify-between items-center">
-      <h1 class="text-2xl font-bold text-blue-700">HEAD FACE</h1>
+      <h1 class="text-2xl font-bold text-blue-700">HEAD FACE 1.0</h1>
       <button
         id="logout-btn"
         class="bg-red-500 hover:bg-red-600 text-white px-4 py-1 rounded-xl font-semibold"
@@ -84,9 +84,12 @@
 
         <h2 class="text-xl font-bold text-blue-700 mb-4">รายการการบ้าน</h2>
         <div id="hw-list" class="space-y-4"></div>
+        <h2 class="text-xl font-bold text-blue-700 mb-4 mt-8">ปฏิทินการบ้าน</h2>
+        <div id="calendar" class="grid grid-cols-7 gap-2 text-center text-sm text-gray-700"></div>
       </div>
+      
     </div>
-
+    
     <!-- Loading -->
     <div id="loading" class="fixed inset-0 bg-white bg-opacity-80 flex items-center justify-center hidden z-50">
       <div class="animate-spin rounded-full h-16 w-16 border-t-4 border-blue-500 border-solid"></div>
@@ -140,6 +143,7 @@
           localStorage.setItem("hw_data", JSON.stringify(data.homework));
           localStorage.setItem("last_updated", serverUpdated);
           renderHomework(data.homework);
+          renderCalendar(data.homework);
         } else {
           alert("โหลดข้อมูลการบ้านไม่สำเร็จ");
         }
@@ -211,6 +215,73 @@ function renderHomework(homeworks) {
   list.innerHTML = html;
 }
 
+      function renderCalendar(homeworks) {
+        const calendarEl = document.getElementById("calendar");
+        calendarEl.innerHTML = "";
+
+        const today = new Date();
+        const currentYear = today.getFullYear();
+        const currentMonth = today.getMonth();
+
+        // หาวันที่ 1 ของเดือน
+        const firstDay = new Date(currentYear, currentMonth, 1);
+        const startDay = firstDay.getDay(); // วันในสัปดาห์ที่เริ่ม (0-6)
+
+        const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+
+        // แปลงการบ้านเป็น Map วันที่
+        const hwMap = {};
+        homeworks.forEach(hw => {
+          const date = new Date(hw.due_date);
+          if (
+            date.getFullYear() === currentYear &&
+            date.getMonth() === currentMonth
+          ) {
+            const day = date.getDate();
+            if (!hwMap[day]) hwMap[day] = [];
+            hwMap[day].push(hw);
+          }
+        });
+
+        // เพิ่มหัวตารางวัน
+        const weekDays = ["อา", "จ", "อ", "พ", "พฤ", "ศ", "ส"];
+        weekDays.forEach(day => {
+          const cell = document.createElement("div");
+          cell.className = "font-bold text-blue-700";
+          cell.textContent = day;
+          calendarEl.appendChild(cell);
+        });
+
+        // ช่องว่างก่อนวันที่ 1
+        for (let i = 0; i < startDay; i++) {
+          const empty = document.createElement("div");
+          calendarEl.appendChild(empty);
+        }
+
+        // สร้างช่องวันที่
+        for (let i = 1; i <= daysInMonth; i++) {
+          const cell = document.createElement("div");
+          cell.className =
+            "border rounded-xl p-1 min-h-[40px] flex flex-col items-center justify-start bg-white";
+
+          const dateLabel = document.createElement("div");
+          dateLabel.textContent = i;
+          dateLabel.className = "text-xs font-semibold";
+          cell.appendChild(dateLabel);
+
+          if (hwMap[i]) {
+            hwMap[i].forEach(hw => {
+              const badge = document.createElement("div");
+              badge.className =
+                "mt-1 px-1 py-0.5 bg-yellow-200 text-xs text-blue-700 rounded";
+              badge.textContent = hw.subject;
+              cell.appendChild(badge);
+            });
+          }
+
+          calendarEl.appendChild(cell);
+        }
+      }
      async function markAsSubmitted(hwId) {
   const confirmSubmit = confirm("ยืนยันว่าคุณได้ส่งการบ้านแล้ว?");
   if (!confirmSubmit) return;
