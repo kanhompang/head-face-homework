@@ -81,6 +81,7 @@
       <div class="bg-white rounded-2xl shadow-xl p-6">
         <h2 class="text-xl font-bold text-blue-700 mb-4">ข้อมูลของคุณ</h2>
         <div id="user-info" class="mb-6 text-gray-700"></div>
+        <p id="last-updated-time" class="text-sm text-gray-500 mb-3"></p>
 
         <h2 class="text-xl font-bold text-blue-700 mb-4">รายการการบ้าน</h2>
         <!-- ปฏิทิน -->
@@ -135,6 +136,7 @@
 
           if (localUpdated === serverUpdated) {
             renderHomework(JSON.parse(localHW));
+            showLastUpdatedTime(serverUpdated);
             console.log(localUpdated)
             console.log(serverUpdated)
           } else {
@@ -156,6 +158,7 @@
           localStorage.setItem("hw_data", JSON.stringify(data.homework));
           localStorage.setItem("last_updated", serverUpdated);
           renderHomework(data.homework);
+          showLastUpdatedTime(serverUpdated);
         } else {
           alert("โหลดข้อมูลการบ้านไม่สำเร็จ");
         }
@@ -357,6 +360,25 @@ document.addEventListener("DOMContentLoaded", () => {
       document.addEventListener("DOMContentLoaded", () => {
         updateCalendar();
       });
+
+      function showLastUpdatedTime(timestamp) {
+  const date = new Date(parseInt(timestamp));
+  const options = {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false
+  };
+
+  const formatter = new Intl.DateTimeFormat("th-TH", options);
+  const formatted = formatter.format(date).replace(",", "");
+
+  document.getElementById("last-updated-time").textContent =
+    "อัปเดตล่าสุด: " + formatted + " น.";
+}
+
     </script>
      <a href='http://www.freevisitorcounters.com'>www.Freevisitorcounters</a> <script type='text/javascript' src='https://www.freevisitorcounters.com/auth.php?id=0c410dfcdd15ce30d800ce11733435bf89386a35'></script>
 <script type="text/javascript" src="https://www.freevisitorcounters.com/en/home/counter/1351601/t/1"></script>
