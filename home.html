@@ -268,6 +268,11 @@ document.addEventListener("DOMContentLoaded", () => {
 });
       // ปฏิทิน
       let today = new Date();
+      function toDateStringLocal(date) {
+  const tzOffset = date.getTimezoneOffset() * 60000; // ส่วนต่างเวลาของเขต UTC (หน่วยเป็น ms)
+  const localISO = new Date(date - tzOffset).toISOString(); // ปรับเวลาเป็น local แล้วแปลง
+  return localISO.split("T")[0]; // ตัดส่วนเวลาออก
+}
       let currentMonth = today.getMonth();
       let currentYear = today.getFullYear();
 
@@ -298,7 +303,7 @@ document.addEventListener("DOMContentLoaded", () => {
           date === today.getDate() &&
           currentMonth === today.getMonth() &&
           currentYear === today.getFullYear();
-          const dateStr = thisDate.toISOString().split("T")[0];
+          const dateStr = toDateStringLocal(thisDate);
 
           const dailyHW = homeworks.filter(hw => hw.due_date === dateStr);
 
