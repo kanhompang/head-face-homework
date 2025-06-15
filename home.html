@@ -183,17 +183,17 @@
         }
       }
 
-function renderHomework(homeworks) {
+function renderHomework(homeworks, allHomeworks = null) {
   const list = document.getElementById("hw-list");
 
   if (homeworks.length === 0) {
     list.innerHTML = "<p class='text-gray-500'>ไม่มีการบ้าน</p>";
     return;
   }
-
+  const baseHW = allHomeworks || homeworks;
   // Progress bar
-  const total = homeworks.length;
-  const submitted = homeworks.filter(hw =>
+  const total = baseHW.length;
+  const submitted = baseHW.filter(hw =>
     hw.submitted || (hw.submitted_no || "").includes(user.no.toString())
   ).length;
   const percent = Math.round((submitted / total) * 100);
@@ -398,29 +398,25 @@ document.addEventListener("DOMContentLoaded", () => {
     "อัปเดตล่าสุด: " + formatted + " น.";
 }
 
-      function applyFilter() {
+function applyFilter() {
   const statusFilter = document.getElementById("filter-status").value;
   const dateFilter = document.getElementById("filter-date").value;
   const subjectFilter = document.getElementById("filter-subject").value.trim().toLowerCase();
 
   const allHW = JSON.parse(localStorage.getItem("hw_data")) || [];
+
   const filtered = allHW.filter(hw => {
     const isSubmitted = hw.submitted || (hw.submitted_no || "").includes(user.no.toString());
 
-    // กรองสถานะ
     if (statusFilter === "submitted" && !isSubmitted) return false;
     if (statusFilter === "not_submitted" && isSubmitted) return false;
-
-    // กรองวันที่
     if (dateFilter && hw.due_date !== dateFilter) return false;
-
-    // กรองวิชา
     if (subjectFilter && !hw.subject.toLowerCase().includes(subjectFilter)) return false;
 
     return true;
   });
 
-  renderHomework(filtered);
+  renderHomework(filtered, allHW); // ✅ ส่งทั้ง filtered และ all
 }
     </script>
      <a href='http://www.freevisitorcounters.com'>www.Freevisitorcounters</a> <script type='text/javascript' src='https://www.freevisitorcounters.com/auth.php?id=0c410dfcdd15ce30d800ce11733435bf89386a35'></script>
