@@ -9,6 +9,7 @@
   <body class="bg-gradient-to-br from-blue-100 to-blue-300 min-h-screen">
     <!-- Header -->
     <div class="bg-white shadow-md py-4 px-6 flex justify-between items-center">
+      <h1 class="text-2xl font-bold text-blue-700">HEAD FACE</h1>
       <h1 class="text-2xl font-bold text-blue-700">HEAD FACE 1.0</h1>
       <button
         id="logout-btn"
@@ -96,7 +97,7 @@
       <div class="animate-spin rounded-full h-16 w-16 border-t-4 border-blue-500 border-solid"></div>
     </div>
 
-    <script>
+    <script>More actions
       const user = JSON.parse(localStorage.getItem("user"));
       const loading = document.getElementById("loading");
 
@@ -284,4 +285,49 @@ function renderHomework(homeworks) {
         }
       }
      async function markAsSubmitted(hwId) {
-  const confirmSubmit = confirm("ยืนยันว่าคุณได้ส่งการบ้าน
+  const confirmSubmit = confirm("ยืนยันว่าคุณได้ส่งการบ้านแล้ว?");
+  if (!confirmSubmit) return;
+
+
+  try {
+    const url = `https://script.google.com/macros/s/AKfycbxQyMf_zMNuZoa_JLqa2S5LJYgxd1HwDfnMw-3_FtMH-mN2Db72O4xfqpU17zg2mebPkw/exec?action=submit&no=${user.no}&hw_id=${hwId}`
+    const res = await fetch(url);
+    const data = await res.json();
+
+    if (data.status === "success") {
+      alert("ส่งการบ้านสำเร็จ!");
+
+      // อัปเดต localStorage (อัปเดตสถานะในข้อมูล)
+      const hwList = JSON.parse(localStorage.getItem("hw_data"));
+      const updatedList = hwList.map(hw => {
+        if (hw.id === hwId) {
+          hw.submitted = true; // สมมุติเราจะเช็กจาก field นี้
+        }
+        return hw;
+      });
+      localStorage.setItem("hw_data", JSON.stringify(updatedList));
+
+      // อัปเดตบนหน้าเว็บ
+      renderHomework(updatedList);
+    } else {
+      alert("ส่งการบ้านไม่สำเร็จ");
+    }
+  } catch (err) {
+    alert("เกิดข้อผิดพลาดในการส่งการบ้าน");
+  }
+}
+document.addEventListener("DOMContentLoaded", () => {
+  const logoutBtn = document.getElementById("logout-btn");
+  if (logoutBtn) {
+    logoutBtn.addEventListener("click", () => {
+      localStorage.clear(); // หรือลบเฉพาะ user
+      window.location.href = "index.html"; // ย้อนกลับไปหน้า login
+    });
+  }
+});
+
+    </script>
+     <a href='http://www.freevisitorcounters.com'>www.Freevisitorcounters</a> <script type='text/javascript' src='https://www.freevisitorcounters.com/auth.php?id=0c410dfcdd15ce30d800ce11733435bf89386a35'></script>
+<script type="text/javascript" src="https://www.freevisitorcounters.com/en/home/counter/1351601/t/1"></script>
+  </body>
+</html>
