@@ -135,6 +135,8 @@
 
           if (localUpdated === serverUpdated) {
             renderHomework(JSON.parse(localHW));
+            console.log(localUpdate)
+            console.log(serverUpdated)
           } else {
             await fetchHomework(serverUpdated);
           }
