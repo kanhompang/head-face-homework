@@ -9,7 +9,7 @@
   <body class="bg-gradient-to-br from-blue-100 to-blue-300 min-h-screen">
     <!-- Header -->
     <div class="bg-white shadow-md py-4 px-6 flex justify-between items-center">
-      <h1 class="text-2xl font-bold text-blue-700">HEAD FACE</h1>
+      <h1 class="text-2xl font-bold text-blue-700">HEAD FACE 1.1</h1>
       <button
         id="logout-btn"
         class="bg-red-500 hover:bg-red-600 text-white px-4 py-1 rounded-xl font-semibold"
@@ -133,7 +133,7 @@
           const localUpdated = localStorage.getItem("last_updated");
           const localHW = localStorage.getItem("hw_data");
 
-          if (localUpdated === serverUpdated && localHW) {
+          if (localUpdated === serverUpdated) {
             renderHomework(JSON.parse(localHW));
           } else {
             await fetchHomework(serverUpdated);
