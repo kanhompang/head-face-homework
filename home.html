@@ -7,63 +7,76 @@
     <script src="https://cdn.tailwindcss.com"></script>
   </head>
   <body class="bg-gradient-to-br from-blue-100 to-blue-300 min-h-screen">
+    <!-- Header -->
     <div class="bg-white shadow-md py-4 px-6 flex justify-between items-center">
       <h1 class="text-2xl font-bold text-blue-700">HEAD FACE 1.0</h1>
-      <button id="logout-btn" class="bg-red-500 hover:bg-red-600 text-white px-4 py-1 rounded-xl font-semibold">
+      <button
+        id="logout-btn"
+        class="bg-red-500 hover:bg-red-600 text-white px-4 py-1 rounded-xl font-semibold"
+      >
         ล็อกเอาท์
       </button>
     </div>
+<!-- กล่องข้อความด้านบน -->
+<div class="max-w-4xl mx-auto mt-4 px-4">
+  <div class="bg-white rounded-2xl shadow-lg p-4 text-blue-800 font-semibold text-lg min-h-[60px]">
+    <div id="typewriter"></div>
+  </div>
+</div>
 
-    <div class="max-w-4xl mx-auto mt-4 px-4">
-      <div class="bg-white rounded-2xl shadow-lg p-4 text-blue-800 font-semibold text-lg min-h-[60px]">
-        <div id="typewriter"></div>
-      </div>
-    </div>
+<script>
+  const messages = [
+    "วันนี้ก็สู้ ๆ นะ!",
+    "อย่าลืมส่งการบ้านล่ะ!",
+    "เหนื่อยก็พัก แต่อย่าหยุดนะ",
+    "ระบบนี้ฟรีนะครับ ใช้ได้เลย!",
+    "ถ้าชอบระบบนี้ แชร์ให้เพื่อนด้วยนะ 😄",
+    "อยากได้ระบบแจ้งเตือนเพิ่มไหม? ติดต่อแอดมินได้เลย!",
+    "ขอบคุณที่ใช้ HEAD FACE ❤️",
+    "คุณเก่งมากที่ใช้ระบบนี้ทุกวัน!",
+    "พรุ่งนี้มีการบ้านไหมนะ? กดดูเลย!",
+    "จำไว้ว่า...ทุกความพยายามไม่สูญเปล่า ✨"
+  ];
 
-    <script>
-      const messages = [
-        "วันนี้ก็สู้ ๆ นะ!",
-        "อย่าลืมส่งการบ้านล่ะ!",
-        "เหนื่อยก็พัก แต่อย่าหยุดนะ",
-        "ระบบนี้ฟรีนะครับ ใช้ได้เลย!",
-        "ถ้าชอบระบบนี้ แชร์ให้เพื่อนด้วยนะ 😄",
-        "อยากได้ระบบแจ้งเตือนเพิ่มไหม? ติดต่อแอดมินได้เลย!",
-        "ขอบคุณที่ใช้ HEAD FACE ❤️",
-        "คุณเก่งมากที่ใช้ระบบนี้ทุกวัน!",
-        "พรุ่งนี้มีการบ้านไหมนะ? กดดูเลย!",
-        "จำไว้ว่า...ทุกความพยายามไม่สูญเปล่า ✨"
-      ];
-      let currentMessage = 0;
-      let charIndex = 0;
-      const typeTarget = document.getElementById("typewriter");
-      function typeWriter() {
-        const message = messages[currentMessage];
-        if (charIndex < message.length) {
-          typeTarget.innerHTML += message.charAt(charIndex);
-          charIndex++;
-          setTimeout(typeWriter, 50);
-        } else {
-          setTimeout(() => {
-            deleteMessage();
-          }, 2500);
-        }
-      }
-      function deleteMessage() {
-        const message = messages[currentMessage];
-        if (charIndex > 0) {
-          typeTarget.innerHTML = message.substring(0, charIndex - 1);
-          charIndex--;
-          setTimeout(deleteMessage, 30);
-        } else {
-          currentMessage = (currentMessage + 1) % messages.length;
-          setTimeout(typeWriter, 300);
-        }
-      }
-      document.addEventListener("DOMContentLoaded", () => {
-        typeWriter();
-      });
-    </script>
+  let currentMessage = 0;
+  let charIndex = 0;
+  const typeTarget = document.getElementById("typewriter");
 
+  function typeWriter() {
+    const message = messages[currentMessage];
+    if (charIndex < message.length) {
+      typeTarget.innerHTML += message.charAt(charIndex);
+      charIndex++;
+      setTimeout(typeWriter, 50); // ความเร็วพิมพ์
+    } else {
+      setTimeout(() => {
+        // ลบข้อความเดิมช้า ๆ
+        deleteMessage();
+      }, 2500); // พัก 2.5 วินาทีก่อนลบ
+    }
+  }
+
+  function deleteMessage() {
+    const message = messages[currentMessage];
+    if (charIndex > 0) {
+      typeTarget.innerHTML = message.substring(0, charIndex - 1);
+      charIndex--;
+      setTimeout(deleteMessage, 30); // ความเร็วลบ
+    } else {
+      // เปลี่ยนไปข้อความถัดไป
+      currentMessage = (currentMessage + 1) % messages.length;
+      setTimeout(typeWriter, 300);
+    }
+  }
+
+  // เริ่มทำงาน
+  document.addEventListener("DOMContentLoaded", () => {
+    typeWriter();
+  });
+</script>
+
+
+    <!-- Main Content -->
     <div class="max-w-4xl mx-auto mt-8 px-4">
       <div class="bg-white rounded-2xl shadow-xl p-6">
         <h2 class="text-xl font-bold text-blue-700 mb-4">ข้อมูลของคุณ</h2>
@@ -71,17 +84,14 @@
 
         <h2 class="text-xl font-bold text-blue-700 mb-4">รายการการบ้าน</h2>
         <div id="hw-list" class="space-y-4"></div>
-
         <h2 class="text-xl font-bold text-blue-700 mb-4 mt-8">ปฏิทินการบ้าน</h2>
-        <div class="flex justify-between items-center mb-2">
-          <button id="prev-month" class="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600">เดือนก่อนหน้า</button>
-          <div id="month-label" class="font-semibold text-blue-700"></div>
-          <button id="next-month" class="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600">เดือนถัดไป</button>
-        </div>
         <div id="calendar" class="grid grid-cols-7 gap-2 text-center text-sm text-gray-700"></div>
       </div>
+      
     </div>
 
+    
+    <!-- Loading -->
     <div id="loading" class="fixed inset-0 bg-white bg-opacity-80 flex items-center justify-center hidden z-50">
       <div class="animate-spin rounded-full h-16 w-16 border-t-4 border-blue-500 border-solid"></div>
     </div>
@@ -89,41 +99,152 @@
     <script>
       const user = JSON.parse(localStorage.getItem("user"));
       const loading = document.getElementById("loading");
-      let currentYear = new Date().getFullYear();
-      let currentMonth = new Date().getMonth();
-      let cachedHomework = [];
+
+      if (!user) {
+        window.location.href = "index.html";
+      } else {
+        document.getElementById("user-info").innerHTML = `
+          <p><strong>ชื่อ:</strong> ${user.firstName} ${user.lastName}</p>
+          <p><strong>เลขที่:</strong> ${user.no}</p>
+          <p><strong>เลขประจำตัว:</strong> ${user.studentId}</p>
+        `;
+
+        checkLastUpdatedAndLoad();
+      }
+
+      async function checkLastUpdatedAndLoad() {
+        loading.classList.remove("hidden");
+
+        try {
+          const res = await fetch("https://script.google.com/macros/s/AKfycbxQyMf_zMNuZoa_JLqa2S5LJYgxd1HwDfnMw-3_FtMH-mN2Db72O4xfqpU17zg2mebPkw/exec?action=lastUpdated");
+          const data = await res.json();
+
+          const serverUpdated = data.last_updated;
+          const localUpdated = localStorage.getItem("last_updated");
+          const localHW = localStorage.getItem("hw_data");
+
+          if (localUpdated === serverUpdated && localHW) {
+            renderHomework(JSON.parse(localHW));
+          } else {
+            await fetchHomework(serverUpdated);
+          }
+        } catch (err) {
+          alert("เกิดข้อผิดพลาดในการตรวจสอบเวลาอัปเดต");
+        } finally {
+          loading.classList.add("hidden");
+        }
+      }
 
       async function fetchHomework(serverUpdated) {
         const url = `https://script.google.com/macros/s/AKfycbxQyMf_zMNuZoa_JLqa2S5LJYgxd1HwDfnMw-3_FtMH-mN2Db72O4xfqpU17zg2mebPkw/exec?action=hw&no=${user.no}`;
         const res = await fetch(url);
         const data = await res.json();
+
         if (data.status === "success") {
           localStorage.setItem("hw_data", JSON.stringify(data.homework));
           localStorage.setItem("last_updated", serverUpdated);
-          cachedHomework = data.homework;
           renderHomework(data.homework);
-          renderCalendar(currentYear, currentMonth, data.homework);
+          renderCalendar(data.homework);
+        } else {
+          alert("โหลดข้อมูลการบ้านไม่สำเร็จ");
         }
       }
 
-      function renderCalendar(year, month, homeworks) {
+function renderHomework(homeworks) {
+  const list = document.getElementById("hw-list");
+
+  if (homeworks.length === 0) {
+    list.innerHTML = "<p class='text-gray-500'>ไม่มีการบ้าน</p>";
+    return;
+  }
+
+  // Progress bar
+  const total = homeworks.length;
+  const submitted = homeworks.filter(hw =>
+    hw.submitted || (hw.submitted_no || "").includes(user.no.toString())
+  ).length;
+  const percent = Math.round((submitted / total) * 100);
+
+  let html = `
+    <div class="mb-6">
+      <p class="text-sm font-semibold text-gray-600 mb-1">ความคืบหน้า: ${percent}%</p>
+      <div class="w-full bg-gray-300 rounded-full h-4 overflow-hidden">
+        <div class="bg-blue-500 h-full transition-all duration-500" style="width: ${percent}%"></div>
+      </div>
+    </div>
+  `;
+
+  // การบ้านแต่ละชิ้น
+  const today = new Date();
+  homeworks.forEach(hw => {
+    const isSubmitted = hw.submitted || (hw.submitted_no || "").includes(user.no.toString());
+
+    const dueDate = new Date(hw.due_date); // ต้องเป็นรูปแบบ "yyyy-mm-dd" หรือ Date ที่ parse ได้
+    const timeDiff = dueDate - today;
+    const daysLeft = Math.ceil(timeDiff / (1000 * 60 * 60 * 24));
+
+    // สีพื้นหลังตามกำหนดส่ง
+    let boxColor = "bg-white";
+    if (!isSubmitted && daysLeft <= 2 && daysLeft >= 0) {
+      boxColor = "bg-yellow-100"; // เหลืองอ่อน
+    }
+
+    html += `
+      <div class="${boxColor} border border-gray-300 rounded-xl p-4">
+        <h3 class="text-lg font-semibold text-blue-700">${hw.subject}</h3>
+        <p><strong>รายละเอียด:</strong> ${hw.title}</p>
+        <p><strong>กำหนดส่ง:</strong> ${hw.due_date}</p>
+        <p><strong>สถานะ:</strong>
+          <span class="${isSubmitted ? "text-green-600" : "text-red-500"}">
+            ${isSubmitted ? "ส่งแล้ว" : "ยังไม่ส่ง"}
+          </span>
+        </p>
+        ${
+          isSubmitted
+            ? ""
+            : `<button
+                onclick="markAsSubmitted('${hw.id}')"
+                class="mt-2 bg-green-500 hover:bg-green-600 text-white py-1 px-3 rounded-lg"
+              >
+                บันทึกว่าส่งแล้ว
+              </button>`
+        }
+      </div>
+    `;
+  });
+
+  list.innerHTML = html;
+}
+
+      function renderCalendar(homeworks) {
         const calendarEl = document.getElementById("calendar");
         calendarEl.innerHTML = "";
-        const firstDay = new Date(year, month, 1);
-        const startDay = firstDay.getDay();
-        const daysInMonth = new Date(year, month + 1, 0).getDate();
-        document.getElementById("month-label").textContent = `${year} - ${month + 1}`;
 
+        const today = new Date();
+        const currentYear = today.getFullYear();
+        const currentMonth = today.getMonth();
+
+        // หาวันที่ 1 ของเดือน
+        const firstDay = new Date(currentYear, currentMonth, 1);
+        const startDay = firstDay.getDay(); // วันในสัปดาห์ที่เริ่ม (0-6)
+
+        const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+
+        // แปลงการบ้านเป็น Map วันที่
         const hwMap = {};
         homeworks.forEach(hw => {
           const date = new Date(hw.due_date);
-          if (date.getFullYear() === year && date.getMonth() === month) {
+          if (
+            date.getFullYear() === currentYear &&
+            date.getMonth() === currentMonth
+          ) {
             const day = date.getDate();
             if (!hwMap[day]) hwMap[day] = [];
             hwMap[day].push(hw);
           }
         });
 
+        // เพิ่มหัวตารางวัน
         const weekDays = ["อา", "จ", "อ", "พ", "พฤ", "ศ", "ส"];
         weekDays.forEach(day => {
           const cell = document.createElement("div");
@@ -132,93 +253,35 @@
           calendarEl.appendChild(cell);
         });
 
+        // ช่องว่างก่อนวันที่ 1
         for (let i = 0; i < startDay; i++) {
-          calendarEl.appendChild(document.createElement("div"));
+          const empty = document.createElement("div");
+          calendarEl.appendChild(empty);
         }
 
+        // สร้างช่องวันที่
         for (let i = 1; i <= daysInMonth; i++) {
           const cell = document.createElement("div");
-          cell.className = "border rounded-xl p-1 min-h-[40px] flex flex-col items-center justify-start bg-white";
+          cell.className =
+            "border rounded-xl p-1 min-h-[40px] flex flex-col items-center justify-start bg-white";
+
           const dateLabel = document.createElement("div");
           dateLabel.textContent = i;
           dateLabel.className = "text-xs font-semibold";
           cell.appendChild(dateLabel);
+
           if (hwMap[i]) {
             hwMap[i].forEach(hw => {
               const badge = document.createElement("div");
-              badge.className = "mt-1 px-1 py-0.5 bg-yellow-200 text-xs text-blue-700 rounded";
+              badge.className =
+                "mt-1 px-1 py-0.5 bg-yellow-200 text-xs text-blue-700 rounded";
               badge.textContent = hw.subject;
               cell.appendChild(badge);
             });
           }
+
           calendarEl.appendChild(cell);
         }
       }
-
-      document.getElementById("prev-month").addEventListener("click", () => {
-        currentMonth--;
-        if (currentMonth < 0) {
-          currentMonth = 11;
-          currentYear--;
-        }
-        renderCalendar(currentYear, currentMonth, cachedHomework);
-      });
-
-      document.getElementById("next-month").addEventListener("click", () => {
-        currentMonth++;
-        if (currentMonth > 11) {
-          currentMonth = 0;
-          currentYear++;
-        }
-        renderCalendar(currentYear, currentMonth, cachedHomework);
-      });
-
-      function renderHomework(homeworks) {
-        const list = document.getElementById("hw-list");
-        if (!homeworks.length) {
-          list.innerHTML = "<p class='text-gray-500'>ไม่มีการบ้าน</p>";
-          return;
-        }
-        let html = "";
-        homeworks.forEach(hw => {
-          html += `<div class='bg-white rounded-xl shadow p-4'><h3 class='font-semibold text-blue-700'>${hw.subject}</h3><p>${hw.title}</p><p>กำหนดส่ง: ${hw.due_date}</p></div>`;
-        });
-        list.innerHTML = html;
-      }
-
-      async function checkLastUpdatedAndLoad() {
-        loading.classList.remove("hidden");
-        try {
-          const res = await fetch("https://script.google.com/macros/s/AKfycbxQyMf_zMNuZoa_JLqa2S5LJYgxd1HwDfnMw-3_FtMH-mN2Db72O4xfqpU17zg2mebPkw/exec?action=lastUpdated");
-          const data = await res.json();
-          const serverUpdated = data.last_updated;
-          const localUpdated = localStorage.getItem("last_updated");
-          const localHW = localStorage.getItem("hw_data");
-          if (localUpdated === serverUpdated && localHW) {
-            cachedHomework = JSON.parse(localHW);
-            renderHomework(cachedHomework);
-            renderCalendar(currentYear, currentMonth, cachedHomework);
-          } else {
-            await fetchHomework(serverUpdated);
-          }
-        } catch (err) {
-          alert("เกิดข้อผิดพลาดในการโหลดข้อมูล");
-        } finally {
-          loading.classList.add("hidden");
-        }
-      }
-
-      if (!user) {
-        window.location.href = "index.html";
-      } else {
-        document.getElementById("user-info").innerHTML = `<p><strong>ชื่อ:</strong> ${user.firstName} ${user.lastName}</p><p><strong>เลขที่:</strong> ${user.no}</p><p><strong>เลขประจำตัว:</strong> ${user.studentId}</p>`;
-        checkLastUpdatedAndLoad();
-      }
-
-      document.getElementById("logout-btn").addEventListener("click", () => {
-        localStorage.clear();
-        window.location.href = "index.html";
-      });
-    </script>
-  </body>
-</html>
+     async function markAsSubmitted(hwId) {
+  const confirmSubmit = confirm("ยืนยันว่าคุณได้ส่งการบ้าน
