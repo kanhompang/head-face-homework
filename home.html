@@ -129,13 +129,13 @@
           const res = await fetch("https://script.google.com/macros/s/AKfycbxQyMf_zMNuZoa_JLqa2S5LJYgxd1HwDfnMw-3_FtMH-mN2Db72O4xfqpU17zg2mebPkw/exec?action=lastUpdated");
           const data = await res.json();
 
-          const serverUpdated = data.last_updated;
-          const localUpdated = localStorage.getItem("last_updated");
+          const serverUpdated = parseInt(data.last_updated);
+          const localUpdated = parseInt(localStorage.getItem("last_updated"));
           const localHW = localStorage.getItem("hw_data");
 
           if (localUpdated === serverUpdated) {
             renderHomework(JSON.parse(localHW));
-            console.log(localUpdate)
+            console.log(localUpdated)
             console.log(serverUpdated)
           } else {
             await fetchHomework(serverUpdated);
