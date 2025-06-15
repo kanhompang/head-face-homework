@@ -94,7 +94,7 @@
       let cachedHomework = [];
 
       async function fetchHomework(serverUpdated) {
-        const url = `https://script.google.com/macros/s/YOUR_SCRIPT_ID/exec?action=hw&no=${user.no}`;
+        const url = `https://script.google.com/macros/s/AKfycbxQyMf_zMNuZoa_JLqa2S5LJYgxd1HwDfnMw-3_FtMH-mN2Db72O4xfqpU17zg2mebPkw/exec?action=hw&no=${user.no}`;
         const res = await fetch(url);
         const data = await res.json();
         if (data.status === "success") {
@@ -189,7 +189,7 @@
       async function checkLastUpdatedAndLoad() {
         loading.classList.remove("hidden");
         try {
-          const res = await fetch("https://script.google.com/macros/s/YOUR_SCRIPT_ID/exec?action=lastUpdated");
+          const res = await fetch("https://script.google.com/macros/s/AKfycbxQyMf_zMNuZoa_JLqa2S5LJYgxd1HwDfnMw-3_FtMH-mN2Db72O4xfqpU17zg2mebPkw/exec?action=lastUpdated");
           const data = await res.json();
           const serverUpdated = data.last_updated;
           const localUpdated = localStorage.getItem("last_updated");
