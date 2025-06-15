@@ -83,6 +83,20 @@
         <div id="user-info" class="mb-6 text-gray-700"></div>
 
         <h2 class="text-xl font-bold text-blue-700 mb-4">รายการการบ้าน</h2>
+        <!-- ปฏิทิน -->
+        <div class="max-w-4xl mx-auto mt-6 px-4">
+          <div class="bg-white rounded-2xl shadow-xl p-4">
+            <div class="flex justify-between items-center mb-4">
+              <button id="prevMonth" class="text-blue-600 font-bold text-xl">&lt;</button>
+              <h2 id="monthYear" class="text-xl font-semibold text-blue-800"></h2>
+              <button id="nextMonth" class="text-blue-600 font-bold text-xl">&gt;</button>
+            </div>
+            <div class="grid grid-cols-7 text-center font-semibold text-blue-700 mb-2">
+              <div>อา.</div><div>จ.</div><div>อ.</div><div>พ.</div><div>พฤ.</div><div>ศ.</div><div>ส.</div>
+            </div>
+            <div id="calendar" class="grid grid-cols-7 gap-2 text-center text-sm"></div>
+          </div>
+        </div>
         <div id="hw-list" class="space-y-4"></div>
       </div>
     </div>
@@ -252,7 +266,84 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 });
+      // ปฏิทิน
+      let today = new Date();
+      let currentMonth = today.getMonth();
+      let currentYear = today.getFullYear();
 
+      function renderCalendarWithHomework(homeworks) {
+        const calendarEl = document.getElementById("calendar");
+        const monthYearEl = document.getElementById("monthYear");
+
+        calendarEl.innerHTML = "";
+
+        const monthNames = [
+          "มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน",
+          "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"
+        ];
+
+        monthYearEl.textContent = `${monthNames[currentMonth]} ${currentYear + 543}`;
+
+        const firstDay = new Date(currentYear, currentMonth, 1).getDay();
+        const lastDate = new Date(currentYear, currentMonth + 1, 0).getDate();
+
+        for (let i = 0; i < firstDay; i++) {
+          calendarEl.appendChild(document.createElement("div"));
+        }
+
+        for (let date = 1; date <= lastDate; date++) {
+          const cell = document.createElement("div");
+          const thisDate = new Date(currentYear, currentMonth, date);
+          const dateStr = thisDate.toISOString().split("T")[0];
+
+          const dailyHW = homeworks.filter(hw => hw.due_date === dateStr);
+
+          cell.className = "bg-gray-100 rounded-lg p-1 h-20 hover:bg-blue-200 transition cursor-pointer flex flex-col items-center justify-start overflow-hidden";
+          cell.innerHTML = `<div class='font-bold text-sm'>${date}</div>`;
+
+          dailyHW.forEach(hw => {
+            const subj = document.createElement("div");
+            subj.className = "text-xs text-blue-700 truncate w-full";
+            subj.textContent = hw.subject;
+            cell.appendChild(subj);
+          });
+
+          cell.addEventListener("click", () => {
+            if (dailyHW.length > 0) {
+              alert("การบ้านวันที่ " + date + ":\n" + dailyHW.map(hw => `${hw.subject}: ${hw.title}`).join("\n"));
+            }
+          });
+
+          calendarEl.appendChild(cell);
+        }
+      }
+
+      function updateCalendar() {
+        const hwData = JSON.parse(localStorage.getItem("hw_data")) || [];
+        renderCalendarWithHomework(hwData);
+      }
+
+      document.getElementById("prevMonth").addEventListener("click", () => {
+        currentMonth--;
+        if (currentMonth < 0) {
+          currentMonth = 11;
+          currentYear--;
+        }
+        updateCalendar();
+      });
+
+      document.getElementById("nextMonth").addEventListener("click", () => {
+        currentMonth++;
+        if (currentMonth > 11) {
+          currentMonth = 0;
+          currentYear++;
+        }
+        updateCalendar();
+      });
+
+      document.addEventListener("DOMContentLoaded", () => {
+        updateCalendar();
+      });
     </script>
      <a href='http://www.freevisitorcounters.com'>www.Freevisitorcounters</a> <script type='text/javascript' src='https://www.freevisitorcounters.com/auth.php?id=0c410dfcdd15ce30d800ce11733435bf89386a35'></script>
 <script type="text/javascript" src="https://www.freevisitorcounters.com/en/home/counter/1351601/t/1"></script>
