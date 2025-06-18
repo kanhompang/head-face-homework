@@ -72,5 +72,80 @@
 
   populateDropdown();
         </script>
+  <script>
+  const select = document.getElementById("reminder-time");
+
+  // ดึง line user id จาก localStorage หรือ session อะไรก็ได้ที่คุณใช้
+  const lineUserId = localStorage.getItem("line_user_id");
+
+  // โหลดค่าที่ตั้งไว้จากชีทมาแสดงใน dropdown (optional)
+  async function loadUserReminderTime() {
+    try {
+      const res = await fetch(`https://script.google.com/macros/s/AKfycbxQyMf_zMNuZoa_JLqa2S5LJYgxd1HwDfnMw-3_FtMH-mN2Db72O4xfqpU17zg2mebPkw/exec?action=get_reminder_time&id=${lineUserId}`);
+      const data = await res.json();
+      if (data.status === "success") {
+        select.value = data.time || "16:30";
+      }
+    } catch (err) {
+      console.error("โหลดเวลาแจ้งเตือนไม่สำเร็จ", err);
+    }
+  }
+
+  // ตรวจสอบจำนวนครั้งที่เปลี่ยนในวันนี้
+  function canChangeTimeToday() {
+    const history = JSON.parse(localStorage.getItem("reminder_change_history") || "{}");
+    const today = new Date().toISOString().split("T")[0]; // 'YYYY-MM-DD'
+
+    if (!history[today]) {
+      history[today] = 0;
+    }
+
+    if (history[today] >= 5) {
+      alert("เปลี่ยนได้สูงสุด 5 ครั้งต่อวัน");
+      return false;
+    }
+
+    history[today]++;
+    localStorage.setItem("reminder_change_history", JSON.stringify(history));
+    return true;
+  }
+
+  // อัปเดตเวลาบนชีท
+  async function updateReminderTime(newTime) {
+    if (!canChangeTimeToday()) return;
+
+    try {
+      const res = await fetch("https://script.google.com/macros/s/AKfycbxQyMf_zMNuZoa_JLqa2S5LJYgxd1HwDfnMw-3_FtMH-mN2Db72O4xfqpU17zg2mebPkw/exec", {
+        method: "POST",
+        body: JSON.stringify({
+          action: "update_reminder_time",
+          id: lineUserId,
+          time: newTime
+        }),
+        headers: {
+          "Content-Type": "application/json",
+        }
+      });
+
+      const result = await res.json();
+      if (result.status === "success") {
+        alert("บันทึกเวลาแจ้งเตือนแล้ว!");
+      } else {
+        alert("เกิดข้อผิดพลาดในการบันทึก");
+      }
+    } catch (err) {
+      alert("เชื่อมต่อไม่สำเร็จ");
+      console.error(err);
+    }
+  }
+
+  select.addEventListener("change", () => {
+    const newTime = select.value;
+    updateReminderTime(newTime);
+  });
+
+  // โหลดเวลาเดิมเมื่อเข้าเว็บ
+  window.onload = loadUserReminderTime;
+</script>
 </body>
 </html>
