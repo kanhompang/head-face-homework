@@ -9,7 +9,7 @@
   <body class="bg-gradient-to-br from-blue-100 to-blue-300 min-h-screen">
     <div class="max-w-md mx-auto mt-10 p-6 bg-white shadow-xl rounded-2xl">
       <h1 class="text-xl font-bold text-blue-700 text-center mb-4">
-        ตั้งเวลาแจ้งเตือนการบ้าน
+        ตั้งเวลาแจ้งเตือนการบ้าน beta 0.4
       </h1>
 
       <label class="block text-sm font-medium text-gray-700 mb-2">เลือกเวลา</label>
@@ -23,8 +23,22 @@
 
       <p id="status-msg" class="text-green-600 mt-4 text-center hidden">✅ บันทึกสำเร็จ!</p>
     </div>
+    <!-- Loading Screen -->
+<div id="loading" class="fixed inset-0 bg-white bg-opacity-80 flex items-center justify-center hidden z-50">
+  <div class="animate-spin rounded-full h-16 w-16 border-t-4 border-blue-500 border-solid"></div>
+</div>
 
     <script>
+      const loading = document.getElementById("loading");
+
+function showLoading() {
+  loading.classList.remove("hidden");
+}
+
+function hideLoading() {
+  loading.classList.add("hidden");
+}
+
       const dropdown = document.getElementById("remind-time");
       const statusMsg = document.getElementById("status-msg");
       const user = JSON.parse(localStorage.getItem("user"));
@@ -41,10 +55,11 @@
 
       async function loadReminderTime() {
         if (!lineUserId) return;
-
+        showLoading(); // 👈 แสดง loading
         const res = await fetch(`https://script.google.com/macros/s/AKfycbxQyMf_zMNuZoa_JLqa2S5LJYgxd1HwDfnMw-3_FtMH-mN2Db72O4xfqpU17zg2mebPkw/exec?action=get_reminder_time&id=${lineUserId}`);
         const data = await res.json();
         if (data.status === "success") {
+          hideLoading(); // 👈 ซ่อน loading
           dropdown.value = data.time || "16:30";
         }
       }
@@ -52,11 +67,11 @@
       async function saveReminderTime() {
         const selected = dropdown.value;
         if (!lineUserId) return alert("ไม่พบข้อมูลผู้ใช้");
-
+        showLoading();
         const url = `https://script.google.com/macros/s/AKfycbxQyMf_zMNuZoa_JLqa2S5LJYgxd1HwDfnMw-3_FtMH-mN2Db72O4xfqpU17zg2mebPkw/exec?action=set_reminder_time&id=${lineUserId}&time=${selected}`;
         const res = await fetch(url);
         const result = await res.json();
-
+        hideLoading(); // 👈 ซ่อน loading
         if (result.status === "success") {
           statusMsg.classList.remove("hidden");
           setTimeout(() => statusMsg.classList.add("hidden"), 3000);
