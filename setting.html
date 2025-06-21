@@ -42,7 +42,7 @@
       async function loadReminderTime() {
         if (!lineUserId) return;
 
-        const res = await fetch(`https://script.google.com/macros/s/1nXQFLQZO4PzEzq-sGdBxhMv-IdwbdWG4eILiFrcxJ-bfCQ_PgL7mB7tf/exec?action=get_reminder_time&id=${lineUserId}`);
+        const res = await fetch(`https://script.google.com/macros/s/AKfycbxQyMf_zMNuZoa_JLqa2S5LJYgxd1HwDfnMw-3_FtMH-mN2Db72O4xfqpU17zg2mebPkw/exec?action=get_reminder_time&id=${lineUserId}`);
         const data = await res.json();
         if (data.status === "success") {
           dropdown.value = data.time || "16:30";
@@ -53,7 +53,7 @@
         const selected = dropdown.value;
         if (!lineUserId) return alert("ไม่พบข้อมูลผู้ใช้");
 
-        const url = `https://script.google.com/macros/s/1nXQFLQZO4PzEzq-sGdBxhMv-IdwbdWG4eILiFrcxJ-bfCQ_PgL7mB7tf/exec?action=set_reminder_time&id=${lineUserId}&time=${selected}`;
+        const url = `https://script.google.com/macros/s/AKfycbxQyMf_zMNuZoa_JLqa2S5LJYgxd1HwDfnMw-3_FtMH-mN2Db72O4xfqpU17zg2mebPkw/exec?action=set_reminder_time&id=${lineUserId}&time=${selected}`;
         const res = await fetch(url);
         const result = await res.json();
 
