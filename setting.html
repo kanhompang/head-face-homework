@@ -74,7 +74,6 @@
   populateDropdown();
         </script>
   <script>
-  const select = document.getElementById("reminder-time");
 
   // ดึง line user id จาก localStorage หรือ session อะไรก็ได้ที่คุณใช้
   const lineUserId = localStorage.getItem("line_user_id");
@@ -85,7 +84,7 @@
       const res = await fetch(`https://script.google.com/macros/s/AKfycbxQyMf_zMNuZoa_JLqa2S5LJYgxd1HwDfnMw-3_FtMH-mN2Db72O4xfqpU17zg2mebPkw/exec?action=get_reminder_time&id=${lineUserId}`);
       const data = await res.json();
       if (data.status === "success") {
-        select.value = data.time || "16:30";
+        dropdown.value = data.time || "16:30";
       }
     } catch (err) {
       console.error("โหลดเวลาแจ้งเตือนไม่สำเร็จ", err);
@@ -140,7 +139,7 @@
     }
   }
 
-  select.addEventListener("change", () => {
+  dropdown.addEventListener("change", () => {
     const newTime = select.value;
     updateReminderTime(newTime);
   });
