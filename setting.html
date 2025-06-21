@@ -29,6 +29,20 @@
 </div>
 
     <script>
+      document.addEventListener("DOMContentLoaded", () => {
+    const user = JSON.parse(localStorage.getItem("user"));
+    const lineId = user?.lineId;
+
+    if (!lineId) {
+      document.body.innerHTML = `
+        <div class="flex items-center justify-center min-h-screen bg-gradient-to-br from-purple-400 to-blue-600">
+          <h1 class="text-white text-5xl font-extrabold drop-shadow-lg">MAX</h1>
+        </div>
+      `;
+    } else {
+      // ถ้ามี lineId ให้โหลดหน้า setting ตามปกติ เช่น เรียก populateDropdown(), loadReminderTime() ฯลฯ
+    }
+  });
       const loading = document.getElementById("loading");
 
 function showLoading() {
