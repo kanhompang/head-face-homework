@@ -1,77 +1,74 @@
-<!DOCTYPE html>Add commentMore actions
+<!DOCTYPE html>
 <html lang="th">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Setting - HEAD FACE</title>
+    <title>ตั้งเวลาแจ้งเตือน - HEAD FACE</title>
     <script src="https://cdn.tailwindcss.com"></script>
   </head>
-<body class="bg-gradient-to-br from-blue-100 to-blue-300 min-h-screen">
-  <div class="max-w-md mx-auto mt-8 p-6 bg-white shadow-lg rounded-2xl">
-    <h2 class="text-xl font-bold text-blue-700 mb-4 text-center">
-      ตั้งเวลาแจ้งเตือนการบ้าน (beta 0.1 EDIT1)
-    </h2>
+  <body class="bg-gradient-to-br from-blue-100 to-blue-300 min-h-screen">
+    <div class="max-w-md mx-auto mt-10 p-6 bg-white shadow-xl rounded-2xl">
+      <h1 class="text-xl font-bold text-blue-700 text-center mb-4">
+        ตั้งเวลาแจ้งเตือนการบ้าน
+      </h1>
 
-    <div class="mb-4">
-      <label for="remind-time" class="block text-sm font-medium text-gray-700 mb-1">
-        เลือกเวลาแจ้งเตือน
-      </label>
-      <select id="remind-time" class="w-full border border-blue-300 rounded-xl px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
-        <!-- options จะเติมด้วย JavaScript -->
+      <label class="block text-sm font-medium text-gray-700 mb-2">เลือกเวลา</label>
+      <select id="remind-time" class="w-full border border-blue-300 rounded-xl px-4 py-2 mb-4">
+        <option value="none">ไม่แจ้งเตือน</option>
       </select>
+
+      <button onclick="saveReminderTime()" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-xl font-semibold">
+        บันทึกเวลาแจ้งเตือน
+      </button>
+
+      <p id="status-msg" class="text-green-600 mt-4 text-center hidden">✅ บันทึกสำเร็จ!</p>
     </div>
 
-    <button onclick="saveReminderTime()"
-      class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-xl transition duration-200">
-      บันทึกเวลาแจ้งเตือน
-    </button>
+    <script>
+      const dropdown = document.getElementById("remind-time");
+      const statusMsg = document.getElementById("status-msg");
+      const user = JSON.parse(localStorage.getItem("user"));
+      const lineUserId = user?.lineId;
 
-    <p id="status-msg" class="mt-4 text-green-600 text-center font-medium hidden">
-      ✅ บันทึกสำเร็จ!
-    </p>
-  </div>
-  <script>
-  const dropdown = document.getElementById("remind-time");
-  const statusMsg = document.getElementById("status-msg");
-  const user = JSON.parse(localStorage.getItem("user"));
-  const lineUserId = user?.lineId;
-
-  function populateDropdown() {
-    dropdown.innerHTML = `<option value="none">ไม่แจ้งเตือน</option>`;
-    for (let h = 0; h < 24; h++) {
-      for (let m = 0; m < 60; m += 30) {
-        const time = `${h.toString().padStart(2, "0")}:${m.toString().padStart(2, "0")}`;
-        dropdown.innerHTML += `<option value="${time}">${time}</option>`;
+      function populateDropdown() {
+        for (let h = 0; h < 24; h++) {
+          for (let m = 0; m < 60; m += 30) {
+            const time = `${h.toString().padStart(2, "0")}:${m.toString().padStart(2, "0")}`;
+            dropdown.innerHTML += `<option value="${time}">${time}</option>`;
+          }
+        }
       }
-    }
-    dropdown.value = "16:30"; // ตั้งค่า default
-  }
 
-  async function saveReminderTime() {
-    const selected = dropdown.value;
-    if (!lineUserId) return alert("ไม่พบข้อมูลผู้ใช้");
+      async function loadReminderTime() {
+        if (!lineUserId) return;
 
-    const res = await fetch("https://script.google.com/macros/s/AKfycbxQyMf_zMNuZoa_JLqa2S5LJYgxd1HwDfnMw-3_FtMH-mN2Db72O4xfqpU17zg2mebPkw/exec", {
-      method: "POST",
-      body: JSON.stringify({
-        action: "set_reminder_time",
-        line_user_id: lineUserId,
-        time: selected
-      }),
-    });
+        const res = await fetch(`https://script.google.com/macros/s/1nXQFLQZO4PzEzq-sGdBxhMv-IdwbdWG4eILiFrcxJ-bfCQ_PgL7mB7tf/exec?action=get_reminder_time&id=${lineUserId}`);
+        const data = await res.json();
+        if (data.status === "success") {
+          dropdown.value = data.time || "16:30";
+        }
+      }
 
-    const result = await res.json();
-    if (result.status === "success") {
-      statusMsg.classList.remove("hidden");
-      setTimeout(() => statusMsg.classList.add("hidden"), 3000);
-    } else if (result.status === "limit") {
-      alert("คุณเปลี่ยนเวลาเกิน 5 ครั้งในวันนี้");
-    } else {
-      alert("เกิดข้อผิดพลาดในการบันทึก");
-    }
-  }
+      async function saveReminderTime() {
+        const selected = dropdown.value;
+        if (!lineUserId) return alert("ไม่พบข้อมูลผู้ใช้");
 
-  populateDropdown();
-        </script>
-</body>
+        const url = `https://script.google.com/macros/s/1nXQFLQZO4PzEzq-sGdBxhMv-IdwbdWG4eILiFrcxJ-bfCQ_PgL7mB7tf/exec?action=set_reminder_time&id=${lineUserId}&time=${selected}`;
+        const res = await fetch(url);
+        const result = await res.json();
+
+        if (result.status === "success") {
+          statusMsg.classList.remove("hidden");
+          setTimeout(() => statusMsg.classList.add("hidden"), 3000);
+        } else if (result.status === "limit") {
+          alert("เปลี่ยนได้สูงสุด 5 ครั้งต่อวัน");
+        } else {
+          alert("เกิดข้อผิดพลาด");
+        }
+      }
+
+      populateDropdown();
+      loadReminderTime();
+    </script>
+  </body>
 </html>
