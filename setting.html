@@ -7,60 +7,69 @@
     <script src="https://cdn.tailwindcss.com"></script>
   </head>
   <body class="bg-gradient-to-br from-blue-100 to-blue-300 min-h-screen">
-    <div class="max-w-md mx-auto mt-10 p-6 bg-white shadow-xl rounded-2xl">
-      <h1 class="text-xl font-bold text-blue-700 text-center mb-4">
-        ตั้งเวลาแจ้งเตือนการบ้าน 
-      </h1>
 
-      <label class="block text-sm font-medium text-gray-700 mb-2">เลือกเวลา</label>
-      <select id="remind-time" class="w-full border border-blue-300 rounded-xl px-4 py-2 mb-4">
-        <option value="none">ไม่แจ้งเตือน</option>
-      </select>
+    <!-- กล่องตั้งค่าพร้อม overlay -->
+    <div class="relative max-w-md mx-auto mt-10">
+      <!-- กล่องตั้งค่า -->
+      <div id="setting-box" class="p-6 bg-white shadow-xl rounded-2xl relative z-0">
+        <h1 class="text-xl font-bold text-blue-700 text-center mb-4">
+          ตั้งเวลาแจ้งเตือนการบ้าน 
+        </h1>
 
-      <button onclick="saveReminderTime()" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-xl font-semibold">
-        บันทึกเวลาแจ้งเตือน
-      </button>
+        <label class="block text-sm font-medium text-gray-700 mb-2">เลือกเวลา</label>
+        <select id="remind-time" class="w-full border border-blue-300 rounded-xl px-4 py-2 mb-4">
+          <option value="none">ไม่แจ้งเตือน</option>
+        </select>
 
-      <p id="status-msg" class="text-green-600 mt-4 text-center hidden">✅ บันทึกสำเร็จ!</p>
+        <button onclick="saveReminderTime()" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-xl font-semibold">
+          บันทึกเวลาแจ้งเตือน
+        </button>
+
+        <p id="status-msg" class="text-green-600 mt-4 text-center hidden">✅ บันทึกสำเร็จ!</p>
+      </div>
+
+      <!-- ✅ Overlay เฉพาะกล่อง -->
+      <div id="max-overlay" class="absolute inset-0 bg-white bg-opacity-70 rounded-2xl flex items-center justify-center z-10 hidden">
+        <h1 class="text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-purple-500">
+          MAX
+        </h1>
+      </div>
     </div>
-    <!-- Overlay สำหรับผู้ที่ไม่มี lineId -->
-<div id="max-overlay" class="absolute inset-0 bg-white bg-opacity-70 flex items-center justify-center hidden z-50">
-  <h1 class="text-6xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-purple-500">
-    MAX
-  </h1>
-</div>
 
     <!-- Loading Screen -->
-<div id="loading" class="fixed inset-0 bg-white bg-opacity-80 flex items-center justify-center hidden z-50">
-  <div class="animate-spin rounded-full h-16 w-16 border-t-4 border-blue-500 border-solid"></div>
-</div>
+    <div id="loading" class="fixed inset-0 bg-white bg-opacity-80 flex items-center justify-center hidden z-50">
+      <div class="animate-spin rounded-full h-16 w-16 border-t-4 border-blue-500 border-solid"></div>
+    </div>
 
     <script>
       document.addEventListener("DOMContentLoaded", () => {
-  const user = JSON.parse(localStorage.getItem("user"));
-  const lineId = user?.lineId;
+        const user = JSON.parse(localStorage.getItem("user"));
+        const lineId = user?.lineId;
 
-  if (!lineId) {
-    document.getElementById("max-overlay").classList.remove("hidden");
+        if (!lineId) {
+          document.getElementById("max-overlay").classList.remove("hidden");
 
-    // ป้องกันการใช้งาน dropdown และปุ่ม
-    const controls = document.querySelectorAll("select, button");
-    controls.forEach(el => {
-      el.disabled = true;
-      el.classList.add("opacity-50", "cursor-not-allowed");
-    });
-  }
-});
+          // ปิด dropdown และปุ่ม
+          const controls = document.querySelectorAll("select, button");
+          controls.forEach(el => {
+            el.disabled = true;
+            el.classList.add("opacity-50", "cursor-not-allowed");
+          });
+        }
+
+        populateDropdown();
+        loadReminderTime();
+      });
 
       const loading = document.getElementById("loading");
 
-function showLoading() {
-  loading.classList.remove("hidden");
-}
+      function showLoading() {
+        loading.classList.remove("hidden");
+      }
 
-function hideLoading() {
-  loading.classList.add("hidden");
-}
+      function hideLoading() {
+        loading.classList.add("hidden");
+      }
 
       const dropdown = document.getElementById("remind-time");
       const statusMsg = document.getElementById("status-msg");
@@ -78,11 +87,11 @@ function hideLoading() {
 
       async function loadReminderTime() {
         if (!lineUserId) return;
-        showLoading(); // 👈 แสดง loading
+        showLoading();
         const res = await fetch(`https://script.google.com/macros/s/AKfycbxQyMf_zMNuZoa_JLqa2S5LJYgxd1HwDfnMw-3_FtMH-mN2Db72O4xfqpU17zg2mebPkw/exec?action=get_reminder_time&id=${lineUserId}`);
         const data = await res.json();
+        hideLoading();
         if (data.status === "success") {
-          hideLoading(); // 👈 ซ่อน loading
           dropdown.value = data.time || "16:30";
         }
       }
@@ -94,7 +103,7 @@ function hideLoading() {
         const url = `https://script.google.com/macros/s/AKfycbxQyMf_zMNuZoa_JLqa2S5LJYgxd1HwDfnMw-3_FtMH-mN2Db72O4xfqpU17zg2mebPkw/exec?action=set_reminder_time&id=${lineUserId}&time=${selected}`;
         const res = await fetch(url);
         const result = await res.json();
-        hideLoading(); // 👈 ซ่อน loading
+        hideLoading();
         if (result.status === "success") {
           statusMsg.classList.remove("hidden");
           setTimeout(() => statusMsg.classList.add("hidden"), 3000);
@@ -104,9 +113,6 @@ function hideLoading() {
           alert("เกิดข้อผิดพลาด");
         }
       }
-
-      populateDropdown();
-      loadReminderTime();
     </script>
   </body>
 </html>
