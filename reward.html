@@ -101,56 +101,51 @@
     }
 
     async function loadRedeemedRewards(userNo) {
-      try {
-        const res = await fetch(`${GAS_URL}?action=getRedeemedRewards&no=${encodeURIComponent(userNo)}`);
-        const data = await res.json();
-        const listEl = document.getElementById('reward-list');
-        listEl.innerHTML = '';
+  try {
+    const user = loadUser(); // โหลด user ที่นี่แน่ๆ
+    if (!user) return;
 
-        if (!data.success || data.rewards.length === 0) {
-          listEl.innerHTML = '<div class="no-reward">คุณยังไม่มีรางวัลที่แลกไว้</div>';
-          return;
-        }
+    const res = await fetch(`${GAS_URL}?action=getRedeemedRewards&no=${encodeURIComponent(userNo)}`);
+    const data = await res.json();
+    if (!data.success) throw new Error(data.message || 'โหลดข้อมูลล้มเหลว');
 
-        data.rewards.forEach(r => {
-          const card = document.createElement('div');
-          card.className = 'reward-card';
+    const listEl = document.getElementById('reward-list');
+    listEl.innerHTML = '';
 
-          const img = document.createElement('img');
-          img.className = 'reward-img';
-          img.src = (r.type === 'D')
-            ? 'https://cdn-icons-png.flaticon.com/512/1040/1040230.png'
-            : (r.imageUrl || 'https://cdn-icons-png.flaticon.com/512/847/847969.png');
-
-          const info = document.createElement('div');
-          info.className = 'reward-info';
-          info.innerHTML = `
-            <div class="reward-name">${r.name}</div>
-            <div class="reward-desc">${r.desc || ''}</div>
-            <div class="reward-desc">แต้ม: ${r.price}</div>
-          `;
-
-         const alreadyUsed = r.usedList.includes(String(user.no));
-
-          const btn = document.createElement('button');
-          btn.className = 'btn-use';
-          btn.textContent = alreadyUsed ? 'ใช้แล้ว' : 'ใช้รางวัล';
-          btn.disabled = alreadyUsed;
-
-          if (!alreadyUsed) {
-            btn.onclick = () => useReward(r.id);
-          }
-
-          card.appendChild(img);
-          card.appendChild(info);
-          card.appendChild(btn);
-          listEl.appendChild(card);
-        });
-      } catch (err) {
-        console.error(err);
-        document.getElementById('reward-list').innerHTML = `<div class="no-reward">โหลดผิดพลาด: ${err.message}</div>`;
-      }
+    if (data.rewards.length === 0) {
+      listEl.innerHTML = '<div class="no-reward">คุณยังไม่มีรางวัลที่แลกไว้</div>';
+      return;
     }
+
+    data.rewards.forEach(r => {
+      const card = document.createElement('div');
+      card.className = 'reward-card';
+
+      const info = document.createElement('div');
+      info.className = 'reward-info';
+      info.innerHTML = `<div class="reward-name">${r.name}</div><div>แต้ม: ${r.price}</div>`;
+
+      const alreadyUsed = r.usedList.includes(String(user.no));
+
+      const btnUse = document.createElement('button');
+      btnUse.className = 'btn-use';
+      btnUse.textContent = alreadyUsed ? 'ใช้แล้ว' : 'ใช้รางวัล';
+      btnUse.disabled = alreadyUsed;
+
+      if (!alreadyUsed) {
+        btnUse.onclick = () => useReward(r.id);
+      }
+
+      card.appendChild(info);
+      card.appendChild(btnUse);
+      listEl.appendChild(card);
+    });
+  } catch (err) {
+    console.error(err);
+    document.getElementById('reward-list').innerHTML = `<div class="no-reward">ไม่สามารถโหลดรางวัลได้: ${err.message}</div>`;
+  }
+}
+
 
     async function useReward(rewardId) {
       const user = loadUser();
