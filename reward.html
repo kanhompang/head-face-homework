@@ -6,12 +6,14 @@
   <title>รางวัลที่แลกมา | ระบบของคุณ</title>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Kanit:wght@400;700&display=swap');
+
     body {
       font-family: 'Kanit', sans-serif;
       background: #f0f5ff;
       margin: 0; padding: 20px;
       display: flex; justify-content: center;
     }
+
     .container {
       max-width: 600px;
       width: 100%;
@@ -20,45 +22,40 @@
       padding: 25px;
       box-shadow: 0 8px 24px rgba(30,64,175,0.15);
     }
+
     h1 {
       text-align: center;
       color: #1e40af;
       margin-bottom: 20px;
     }
+
     .reward-list {
       display: flex;
       flex-direction: column;
       gap: 16px;
     }
+
     .reward-card {
       background: #e0e7ff;
       border-radius: 12px;
       padding: 15px 20px;
       display: flex;
+      justify-content: space-between;
       align-items: center;
       box-shadow: 0 2px 10px rgba(30, 64, 175, 0.1);
     }
-    .reward-img {
-      width: 60px;
-      height: 60px;
-      border-radius: 8px;
-      margin-right: 15px;
-      object-fit: cover;
-      background: #ccc;
-    }
+
     .reward-info {
-      flex: 1;
+      flex-grow: 1;
+      margin-right: 20px;
     }
+
     .reward-name {
       font-weight: 700;
       font-size: 1.1rem;
       color: #1e3a8a;
     }
-    .reward-desc {
-      color: #475569;
-      font-size: 0.95rem;
-      margin-top: 4px;
-    }
+
     .btn-use {
       background: #2563eb;
       border: none;
@@ -69,9 +66,16 @@
       font-weight: 600;
       transition: background 0.3s ease;
     }
+
     .btn-use:hover {
       background: #1e40af;
     }
+
+    .btn-used {
+      background: #9ca3af;
+      cursor: default;
+    }
+
     .no-reward {
       text-align: center;
       color: #475569;
@@ -89,7 +93,7 @@
   </div>
 
   <script>
-    const GAS_URL = 'https://script.google.com/macros/s/AKfycbxQyMf_zMNuZoa_JLqa2S5LJYgxd1HwDfnMw-3_FtMH-mN2Db72O4xfqpU17zg2mebPkw/exec'; // แก้ให้ตรง
+    const GAS_URL = 'https://script.google.com/macros/s/AKfycbxQyMf_zMNuZoa_JLqa2S5LJYgxd1HwDfnMw-3_FtMH-mN2Db72O4xfqpU17zg2mebPkw/exec'; // เปลี่ยนเป็น URL ของคุณ
 
     function loadUser() {
       const userStr = localStorage.getItem('user');
@@ -101,65 +105,65 @@
     }
 
     async function loadRedeemedRewards(userNo) {
-  try {
-    const user = loadUser(); // โหลด user ที่นี่แน่ๆ
-    if (!user) return;
+      try {
+        const res = await fetch(`${GAS_URL}?action=getRedeemedRewards&no=${encodeURIComponent(userNo)}`);
+        const data = await res.json();
+        if (!data.success) throw new Error(data.message || 'โหลดข้อมูลล้มเหลว');
 
-    const res = await fetch(`${GAS_URL}?action=getRedeemedRewards&no=${encodeURIComponent(userNo)}`);
-    const data = await res.json();
-    if (!data.success) throw new Error(data.message || 'โหลดข้อมูลล้มเหลว');
+        const listEl = document.getElementById('reward-list');
+        listEl.innerHTML = '';
 
-    const listEl = document.getElementById('reward-list');
-    listEl.innerHTML = '';
+        if (data.rewards.length === 0) {
+          listEl.innerHTML = '<div class="no-reward">คุณยังไม่มีรางวัลที่แลกไว้</div>';
+          return;
+        }
 
-    if (data.rewards.length === 0) {
-      listEl.innerHTML = '<div class="no-reward">คุณยังไม่มีรางวัลที่แลกไว้</div>';
-      return;
-    }
+        data.rewards.forEach(r => {
+          const card = document.createElement('div');
+          card.className = 'reward-card';
 
-    data.rewards.forEach(r => {
-      const card = document.createElement('div');
-      card.className = 'reward-card';
+          const info = document.createElement('div');
+          info.className = 'reward-info';
+          info.innerHTML = `<div class="reward-name">${r.name}</div><div>แต้ม: ${r.price}</div>`;
 
-      const info = document.createElement('div');
-      info.className = 'reward-info';
-      info.innerHTML = `<div class="reward-name">${r.name}</div><div>แต้ม: ${r.price}</div>`;
+          const alreadyUsed = r.usedList.includes(String(userNo));
 
-      const alreadyUsed = r.usedList.includes(String(user.no));
+          const btnUse = document.createElement('button');
+          btnUse.className = 'btn-use';
+          if (alreadyUsed) {
+            btnUse.textContent = 'ใช้แล้ว';
+            btnUse.classList.add('btn-used');
+            btnUse.disabled = true;
+          } else {
+            btnUse.textContent = 'ใช้รางวัล';
+            btnUse.onclick = () => useReward(r.id);
+          }
 
-      const btnUse = document.createElement('button');
-      btnUse.className = 'btn-use';
-      btnUse.textContent = alreadyUsed ? 'ใช้แล้ว' : 'ใช้รางวัล';
-      btnUse.disabled = alreadyUsed;
-
-      if (!alreadyUsed) {
-        btnUse.onclick = () => useReward(r.id);
+          card.appendChild(info);
+          card.appendChild(btnUse);
+          listEl.appendChild(card);
+        });
+      } catch (err) {
+        console.error(err);
+        document.getElementById('reward-list').innerHTML = `<div class="no-reward">ไม่สามารถโหลดรางวัลได้: ${err.message}</div>`;
       }
-
-      card.appendChild(info);
-      card.appendChild(btnUse);
-      listEl.appendChild(card);
-    });
-  } catch (err) {
-    console.error(err);
-    document.getElementById('reward-list').innerHTML = `<div class="no-reward">ไม่สามารถโหลดรางวัลได้: ${err.message}</div>`;
-  }
-}
-
+    }
 
     async function useReward(rewardId) {
       const user = loadUser();
       if (!user) return;
-      if (!confirm(`ใช้รางวัล ID: ${rewardId} หรือไม่?`)) return;
+
+      if (!confirm(`ต้องการใช้รางวัลนี้หรือไม่? รางวัล ID: ${rewardId}`)) return;
 
       try {
-        const res = await fetch(`${GAS_URL}?action=useReward&no=${user.no}&rewardId=${rewardId}`);
+        const res = await fetch(`${GAS_URL}?action=useReward&no=${encodeURIComponent(user.no)}&rewardId=${encodeURIComponent(rewardId)}`);
         const result = await res.json();
+
         if (result.success) {
-          alert('ใช้รางวัลแล้ว');
+          alert('ใช้รางวัลเรียบร้อยแล้ว');
           loadRedeemedRewards(user.no);
         } else {
-          alert('ใช้ไม่ได้: ' + result.message);
+          alert('ไม่สามารถใช้รางวัลได้: ' + (result.message || 'เกิดข้อผิดพลาด'));
         }
       } catch (err) {
         console.error(err);
@@ -169,7 +173,9 @@
 
     window.onload = () => {
       const user = loadUser();
-      if (user) loadRedeemedRewards(user.no);
+      if (user) {
+        loadRedeemedRewards(user.no);
+      }
     };
   </script>
 </body>
