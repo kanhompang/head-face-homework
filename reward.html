@@ -126,7 +126,9 @@
           info.className = 'reward-info';
           info.innerHTML = `<div class="reward-name">${r.name}</div><div>แต้ม: ${r.price}</div>`;
 
-          const alreadyUsed = r.usedList.includes(String(userNo));
+          const usedList = Array.isArray(r.usedList) ? r.usedList : [];
+          const alreadyUsed = usedList.includes(String(userNo));
+
 
           const btnUse = document.createElement('button');
           btnUse.className = 'btn-use';
