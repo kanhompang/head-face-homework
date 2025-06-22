@@ -88,9 +88,8 @@
   </div>
 
   <script>
-    const GAS_URL = 'https://script.google.com/macros/s/AKfycbxQyMf_zMNuZoa_JLqa2S5LJYgxd1HwDfnMw-3_FtMH-mN2Db72O4xfqpU17zg2mebPkw/exec'; // เปลี่ยนเป็น URL GAS ของคุณ
+    const GAS_URL = 'https://script.google.com/macros/s/AKfycbxQyMf_zMNuZoa_JLqa2S5LJYgxd1HwDfnMw-3_FtMH-mN2Db72O4xfqpU17zg2mebPkw/exec'; // แก้เป็น URL GAS ของคุณ
 
-    // โหลดข้อมูล user จาก localStorage (เลขที่)
     function loadUser() {
       const userStr = localStorage.getItem('user');
       if (!userStr) {
@@ -100,22 +99,25 @@
       return JSON.parse(userStr);
     }
 
-    // โหลดรางวัลที่แลกมา (filter จาก col I ที่มีเลขที่ user)
     async function loadRedeemedRewards(userNo) {
       try {
-        const res = await fetch(`${GAS_URL}?action=getRedeemedRewards&no=${encodeURIComponent(userNo)}`);
+        const res = await fetch(`${GAS_URL}?action=getRewards`);
         const data = await res.json();
         if (!data.success) throw new Error(data.message || 'โหลดข้อมูลล้มเหลว');
 
         const listEl = document.getElementById('reward-list');
         listEl.innerHTML = '';
 
-        if (data.rewards.length === 0) {
-          listEl.innerHTML = '<div class="no-reward">คุณยังไม่มีรางวัลที่แลกไว้</div>';
+        const rewards = data.rewards.filter(r =>
+          r.claimedList.includes(userNo) && !r.usedList.includes(userNo)
+        );
+
+        if (rewards.length === 0) {
+          listEl.innerHTML = '<div class="no-reward">คุณยังไม่มีรางวัลที่แลกไว้ หรือคุณใช้หมดแล้ว</div>';
           return;
         }
 
-        data.rewards.forEach(r => {
+        rewards.forEach(r => {
           const card = document.createElement('div');
           card.className = 'reward-card';
 
@@ -138,7 +140,6 @@
       }
     }
 
-    // ฟังก์ชันเรียกใช้รางวัล (ส่ง id รางวัล + no ไปแก้ไขใน GAS)
     async function useReward(rewardId) {
       const user = loadUser();
       if (!user) return;
@@ -151,7 +152,6 @@
 
         if (result.success) {
           alert('ใช้รางวัลเรียบร้อยแล้ว');
-          // โหลดรางวัลใหม่
           loadRedeemedRewards(user.no);
         } else {
           alert('ไม่สามารถใช้รางวัลได้: ' + (result.message || 'เกิดข้อผิดพลาด'));
@@ -162,12 +162,9 @@
       }
     }
 
-    // เริ่มต้นโหลดข้อมูล
     window.onload = () => {
       const user = loadUser();
-      if (user) {
-        loadRedeemedRewards(user.no);
-      }
+      if (user) loadRedeemedRewards(user.no);
     };
   </script>
 </body>
