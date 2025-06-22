@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>แต้มสะสม</title>
+  <style>
+    /* ธีมสีฟ้าน้ำเงิน สไตล์เดียวกับหน้าก่อน */
+    body {
+      font-family: "Kanit", sans-serif, Arial, Helvetica, sans-serif;
+      background: linear-gradient(to bottom right, #d0e7ff, #79a6ff);
+      color: #003366;
+      margin: 0;
+      padding: 20px;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .container {
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 8px 16px rgba(0, 85, 204, 0.25);
+      max-width: 480px;
+      width: 100%;
+      padding: 30px 25px 40px;
+      box-sizing: border-box;
+      text-align: center;
+    }
+
+    h1 {
+      margin-top: 0;
+      color: #003366;
+      font-weight: 700;
+    }
+
+    .userinfo {
+      margin-bottom: 30px;
+      font-size: 1.1em;
+      line-height: 1.6;
+      color: #004080;
+    }
+
+    .userinfo div {
+      margin: 6px 0;
+    }
+
+    .points-box {
+      background: #4a90e2; /* น้ำเงินเข้ม */
+      color: white;
+      font-size: 3em;
+      font-weight: 700;
+      padding: 30px 20px;
+      border-radius: 20px;
+      box-shadow: 0 8px 15px rgba(26, 117, 255, 0.7);
+      user-select: none;
+      letter-spacing: 3px;
+      margin: 0 auto;
+      width: fit-content;
+      min-width: 180px;
+    }
+
+    /* Responsive */
+    @media (max-width: 480px) {
+      .container {
+        padding: 20px 15px 30px;
+      }
+      .points-box {
+        font-size: 2.4em;
+        padding: 25px 15px;
+        min-width: 150px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>ข้อมูลส่วนตัว</h1>
+    <div class="userinfo">
+      <div>ชื่อ: <span id="user-name">-</span></div>
+      <div>นามสกุล: <span id="user-lastname">-</span></div>
+      <div>เลขที่: <span id="user-no">-</span></div>
+      <div>เลขประจำตัว: <span id="user-id">-</span></div>
+    </div>
+
+    <div class="points-box" title="แต้มสะสมของคุณ">
+      <span id="user-points">0</span> คะแนน
+    </div>
+  </div>
+
+  <script>
+    // โหลดข้อมูลผู้ใช้จาก localStorage มาแสดง
+    function loadUserData() {
+      const userDataStr = localStorage.getItem('user');
+      if (!userDataStr) {
+        alert('ไม่พบข้อมูลผู้ใช้ กรุณาล็อกอินก่อน');
+        return;
+      }
+      const userData = JSON.parse(userDataStr);
+
+      document.getElementById('user-name').textContent = userData.firstname || '-';
+      document.getElementById('user-lastname').textContent = userData.lastName || '-';
+      document.getElementById('user-no').textContent = userData.no || '-';
+      document.getElementById('user-id').textContent = userData.studentId || '-';
+      document.getElementById('user-points').textContent = userData.points ?? 0;
+    }
+
+    window.onload = loadUserData;
+  </script>
+</body>
+</html>
