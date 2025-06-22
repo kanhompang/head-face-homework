@@ -7,48 +7,41 @@
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Kanit:wght@400;700&display=swap');
 
-    /* โทนสีฟ้า-น้ำเงิน */
     :root {
-      --color-primary: #1e40af;   /* น้ำเงินเข้ม */
-      --color-secondary: #3b82f6; /* ฟ้า */
+      --color-primary: #1e40af;
+      --color-secondary: #3b82f6;
       --color-bg: #f0f5ff;
       --color-text: #1e293b;
       --color-card-bg: #ffffff;
       --shadow: rgba(30, 64, 175, 0.15);
     }
 
-    * {
-      box-sizing: border-box;
-    }
+    * { box-sizing: border-box; }
 
     body {
       margin: 0;
       padding: 30px 15px;
       background-color: var(--color-bg);
-      font-family: 'Kanit', sans-serif, Arial, sans-serif;
+      font-family: 'Kanit', sans-serif;
       color: var(--color-text);
       display: flex;
       justify-content: center;
-      min-height: 100vh;
     }
 
     .container {
-      max-width: 480px;
+      max-width: 600px;
       width: 100%;
       background: var(--color-card-bg);
       border-radius: 20px;
-      padding: 30px 25px 40px;
+      padding: 30px 25px;
       box-shadow: 0 12px 24px var(--shadow);
-      text-align: center;
     }
 
     h1 {
-      margin-top: 0;
-      font-weight: 700;
-      font-size: 2rem;
+      text-align: center;
       color: var(--color-primary);
-      margin-bottom: 30px;
-      letter-spacing: 0.06em;
+      font-size: 1.9rem;
+      margin-top: 0;
     }
 
     .userinfo {
@@ -56,110 +49,236 @@
       grid-template-columns: 1fr 1fr;
       gap: 18px 30px;
       font-weight: 500;
-      font-size: 1.15rem;
-      margin-bottom: 40px;
-      color: var(--color-primary);
-      text-align: left;
+      font-size: 1.1rem;
+      margin-bottom: 30px;
     }
 
     .userinfo div {
+      background: var(--color-bg);
       padding: 10px 16px;
-      background-color: var(--color-bg);
       border-radius: 12px;
       box-shadow: 0 6px 12px rgba(59, 130, 246, 0.1);
-      transition: background-color 0.3s ease;
-    }
-    .userinfo div:hover {
-      background-color: var(--color-secondary);
-      color: white;
-      cursor: default;
     }
 
-    /* กล่องแต้ม */
     .points-box {
-      background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
+      background: linear-gradient(135deg, #2563eb, #1e40af);
       color: white;
-      font-size: 4rem;
+      font-size: 3.2rem;
       font-weight: 900;
-      padding: 40px 20px;
+      padding: 30px 20px;
       border-radius: 30px;
-      box-shadow: 0 15px 30px rgba(30, 64, 175, 0.5);
+      box-shadow: 0 15px 30px rgba(30, 64, 175, 0.4);
       user-select: none;
-      letter-spacing: 6px;
-      display: inline-block;
-      min-width: 200px;
-      position: relative;
-      transition: transform 0.3s ease;
-    }
-    .points-box:hover {
-      transform: scale(1.07);
-      box-shadow: 0 25px 45px rgba(30, 64, 175, 0.7);
+      letter-spacing: 5px;
+      text-align: center;
+      margin-bottom: 40px;
     }
 
     .points-label {
-      position: absolute;
-      top: 14px;
-      right: 20px;
       font-size: 1rem;
-      font-weight: 600;
+      font-weight: 500;
       opacity: 0.85;
-      letter-spacing: 2px;
+      margin-top: 10px;
+      letter-spacing: 1px;
     }
 
-    /* Responsive */
+    /* รางวัล */
+    .reward-section {
+      margin-top: 40px;
+    }
+
+    .reward-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .reward-card {
+      display: flex;
+      align-items: center;
+      background: #f8fbff;
+      border-radius: 16px;
+      padding: 15px;
+      box-shadow: 0 4px 12px rgba(0, 100, 255, 0.1);
+    }
+
+    .reward-img {
+      width: 64px;
+      height: 64px;
+      border-radius: 12px;
+      background-color: #ddd;
+      object-fit: cover;
+      margin-right: 16px;
+    }
+
+    .reward-info {
+      flex: 1;
+    }
+
+    .reward-name {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: #1e3a8a;
+    }
+
+    .reward-desc {
+      font-size: 0.95rem;
+      color: #475569;
+      margin: 4px 0 6px;
+    }
+
+    .reward-meta {
+      font-size: 0.9rem;
+      color: #334155;
+    }
+
+    .reward-points {
+      font-weight: 700;
+      color: var(--color-primary);
+    }
+
+    .disabled {
+      opacity: 0.5;
+    }
+
+    .btn-redeem {
+      background: var(--color-primary);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      padding: 8px 14px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    .btn-redeem:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+    }
+
     @media (max-width: 480px) {
       .userinfo {
         grid-template-columns: 1fr;
-        font-size: 1rem;
       }
-      .points-box {
-        font-size: 3rem;
-        min-width: 150px;
-        padding: 30px 15px;
+
+      .reward-card {
+        flex-direction: column;
+        align-items: flex-start;
       }
-      .points-label {
-        top: 10px;
-        right: 15px;
-        font-size: 0.85rem;
+
+      .reward-img {
+        margin-bottom: 10px;
+      }
+
+      .btn-redeem {
+        width: 100%;
       }
     }
   </style>
 </head>
 <body>
-  <main class="container" role="main" aria-label="ข้อมูลผู้ใช้และแต้มสะสม">
+  <div class="container">
     <h1>ข้อมูลส่วนตัว</h1>
+    <div class="userinfo">
+      <div>ชื่อ: <span id="user-name">-</span></div>
+      <div>นามสกุล: <span id="user-lastname">-</span></div>
+      <div>เลขที่: <span id="user-no">-</span></div>
+      <div>เลขประจำตัว: <span id="user-id">-</span></div>
+    </div>
 
-    <section class="userinfo" aria-label="รายละเอียดผู้ใช้">
-      <div><strong>ชื่อ:</strong> <span id="user-name">-</span></div>
-      <div><strong>นามสกุล:</strong> <span id="user-lastname">-</span></div>
-      <div><strong>เลขที่:</strong> <span id="user-no">-</span></div>
-      <div><strong>เลขประจำตัว:</strong> <span id="user-id">-</span></div>
-    </section>
+    <div class="points-box">
+      <div id="user-points">0</div>
+      <div class="points-label">คะแนนสะสม</div>
+    </div>
 
-    <section aria-label="แต้มสะสมของผู้ใช้">
-      <div class="points-box" title="แต้มสะสมของคุณ">
-        <span id="user-points">0</span>
-        <div class="points-label">คะแนน</div>
+    <div class="reward-section">
+      <h2 style="color:#1d4ed8; font-size: 1.3rem;">ของรางวัล</h2>
+      <div class="reward-grid" id="reward-list">
+        <div>กำลังโหลดรายการรางวัล...</div>
       </div>
-    </section>
-  </main>
+    </div>
+  </div>
 
   <script>
+    const GAS_URL = 'https://script.google.com/macros/s/AKfycbxQyMf_zMNuZoa_JLqa2S5LJYgxd1HwDfnMw-3_FtMH-mN2Db72O4xfqpU17zg2mebPkw/exec'; // แทนที่ด้วย URL ของคุณ
+
     function loadUserData() {
-      const userDataStr = localStorage.getItem('user');
+      const userDataStr = localStorage.getItem('userData');
       if (!userDataStr) {
         alert('ไม่พบข้อมูลผู้ใช้ กรุณาล็อกอินก่อน');
-        return;
+        return null;
       }
       const userData = JSON.parse(userDataStr);
-
-      document.getElementById('user-name').textContent = userData.firstName || '-';
+      document.getElementById('user-name').textContent = userData.name || '-';
       document.getElementById('user-lastname').textContent = userData.lastName || '-';
       document.getElementById('user-no').textContent = userData.no || '-';
-      document.getElementById('user-id').textContent = userData.studentId || '-';
+      document.getElementById('user-id').textContent = userData.userId || '-';
       document.getElementById('user-points').textContent = userData.points ?? 0;
+      return userData;
     }
-    window.onload = loadUserData;
+
+    async function fetchRewards(userPoints, userNo) {
+      try {
+        const res = await fetch(`${GAS_URL}?action=getRewards`);
+        const data = await res.json();
+        if (!data.success) throw new Error("โหลดข้อมูลรางวัลล้มเหลว");
+
+        const list = document.getElementById('reward-list');
+        list.innerHTML = '';
+
+        if (data.rewards.length === 0) {
+          list.innerHTML = '<div>ไม่มีของรางวัลให้แลกในขณะนี้</div>';
+          return;
+        }
+
+        data.rewards.forEach(r => {
+          const hasClaimed = r.claimedList.includes(String(userNo));
+          const enoughPoints = userPoints >= Number(r.price);
+          const canRedeem = !hasClaimed && (r.quantity === 'U' || Number(r.quantity) > r.claimedList.length);
+
+          const card = document.createElement('div');
+          card.className = 'reward-card' + (!canRedeem ? ' disabled' : '');
+
+          const img = document.createElement('img');
+          img.className = 'reward-img';
+          img.src = (r.type === 'D')
+            ? 'https://cdn-icons-png.flaticon.com/512/1040/1040230.png'
+            : (r.imageUrl || 'https://cdn-icons-png.flaticon.com/512/847/847969.png');
+
+          const info = document.createElement('div');
+          info.className = 'reward-info';
+          info.innerHTML = `
+            <div class="reward-name">${r.name}</div>
+            <div class="reward-desc">${r.desc}</div>
+            <div class="reward-meta">
+              <span class="reward-points">แต้ม: ${r.price}</span><br/>
+              จำนวน: ${r.quantity === 'U' ? 'ไม่จำกัด' : r.quantity}<br/>
+              หมดเขต: ${r.expireDate}
+            </div>
+          `;
+
+          const button = document.createElement('button');
+          button.className = 'btn-redeem';
+          button.textContent = hasClaimed ? 'แลกแล้ว' : 'แลกรางวัล';
+          button.disabled = !canRedeem;
+          // TODO: ใส่ event แลกของจริงภายหลัง
+
+          card.appendChild(img);
+          card.appendChild(info);
+          card.appendChild(button);
+          list.appendChild(card);
+        });
+      } catch (err) {
+        console.error(err);
+        document.getElementById('reward-list').innerHTML = '<div>เกิดข้อผิดพลาดในการโหลดของรางวัล</div>';
+      }
+    }
+
+    window.onload = () => {
+      const user = loadUserData();
+      if (user) fetchRewards(user.points ?? 0, user.no ?? '');
+    };
   </script>
 </body>
 </html>
