@@ -130,10 +130,16 @@
             <div class="reward-desc">แต้ม: ${r.price}</div>
           `;
 
+         const alreadyUsed = r.usedList.includes(String(user.no));
+
           const btn = document.createElement('button');
           btn.className = 'btn-use';
-          btn.textContent = 'ใช้รางวัล';
-          btn.onclick = () => useReward(r.id);
+          btn.textContent = alreadyUsed ? 'ใช้แล้ว' : 'ใช้รางวัล';
+          btn.disabled = alreadyUsed;
+
+          if (!alreadyUsed) {
+            btn.onclick = () => useReward(r.id);
+          }
 
           card.appendChild(img);
           card.appendChild(info);
