@@ -204,16 +204,16 @@
     const GAS_URL = 'https://script.google.com/macros/s/AKfycbxQyMf_zMNuZoa_JLqa2S5LJYgxd1HwDfnMw-3_FtMH-mN2Db72O4xfqpU17zg2mebPkw/exec'; // แทนที่ด้วย URL ของคุณ
 
     function loadUserData() {
-      const userDataStr = localStorage.getItem('userData');
+      const userDataStr = localStorage.getItem('user');
       if (!userDataStr) {
         alert('ไม่พบข้อมูลผู้ใช้ กรุณาล็อกอินก่อน');
         return null;
       }
       const userData = JSON.parse(userDataStr);
-      document.getElementById('user-name').textContent = userData.name || '-';
+      document.getElementById('user-name').textContent = userData.firstName || '-';
       document.getElementById('user-lastname').textContent = userData.lastName || '-';
       document.getElementById('user-no').textContent = userData.no || '-';
-      document.getElementById('user-id').textContent = userData.userId || '-';
+      document.getElementById('user-id').textContent = userData.studentId || '-';
       document.getElementById('user-points').textContent = userData.points ?? 0;
       return userData;
     }
