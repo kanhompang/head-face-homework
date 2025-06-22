@@ -85,7 +85,6 @@
       letter-spacing: 1px;
     }
 
-    /* รางวัล */
     .reward-section {
       margin-top: 10px;
       flex-grow: 1;
@@ -231,7 +230,7 @@
   <script>
     const GAS_URL = 'https://script.google.com/macros/s/AKfycbxQyMf_zMNuZoa_JLqa2S5LJYgxd1HwDfnMw-3_FtMH-mN2Db72O4xfqpU17zg2mebPkw/exec'; // เปลี่ยนเป็น URL GAS ของคุณ
 
-    // โหลดข้อมูลผู้ใช้จาก localStorage
+    // โหลดข้อมูลผู้ใช้จาก localStorage (เฉพาะข้อมูลส่วนตัว ไม่เอาแต้ม)
     function loadUserData() {
       const userDataStr = localStorage.getItem('user');
       if (!userDataStr) {
@@ -243,11 +242,23 @@
       document.getElementById('user-lastname').textContent = userData.lastName || '-';
       document.getElementById('user-no').textContent = userData.no || '-';
       document.getElementById('user-id').textContent = userData.studentId || '-';
-      document.getElementById('user-points').textContent = userData.points ?? 0;
       return userData;
     }
 
-    // ดึงข้อมูลรางวัลจาก GAS
+    // ดึงแต้มล่าสุดจาก GAS
+    async function fetchUserPoints(no) {
+      try {
+        const res = await fetch(`${GAS_URL}?action=getUserPoints&no=${encodeURIComponent(no)}`);
+        const data = await res.json();
+        if (!data.success) throw new Error("โหลดแต้มไม่สำเร็จ");
+        return data.points;
+      } catch (err) {
+        console.error(err);
+        return null;
+      }
+    }
+
+    // ดึงรางวัลจาก GAS
     async function fetchRewards(userPoints, userNo) {
       try {
         const res = await fetch(`${GAS_URL}?action=getRewards`);
@@ -294,22 +305,18 @@
           button.textContent = hasClaimed ? 'แลกแล้ว' : 'แลกรางวัล';
           button.disabled = !canRedeem;
 
-          // ฟังก์ชันแลกรางวัล กดปุ่มแล้วเรียก GAS อัปเดตแต้มและสถานะ
           button.onclick = async () => {
             if (!confirm(`คุณต้องการแลกรางวัล "${r.name}" ใช่หรือไม่?`)) return;
-
             try {
-              const res = await fetch(`${GAS_URL}?action=redeemReward&no=${user.no}&rewardId=${r.id}&points=${user.points}`);
+              const res = await fetch(`${GAS_URL}?action=redeemReward&no=${userNo}&rewardId=${r.id}&points=${userPoints}`);
               const result = await res.json();
 
               if (result.success) {
                 alert("แลกรางวัลสำเร็จ!");
-                // อัปเดตแต้มใน localStorage และบนหน้าเว็บ
-                user.points = result.newPoints;
-                localStorage.setItem("user", JSON.stringify(user));
-                document.getElementById('user-points').textContent = user.points;
-                // รีโหลดรางวัลใหม่
-                fetchRewards(user.points, user.no);
+                // อัปเดตแต้มบนหน้าเว็บ (ไม่เก็บ localStorage)
+                document.getElementById('user-points').textContent = result.newPoints;
+                // รีโหลดรางวัลใหม่ด้วยแต้มล่าสุด
+                fetchRewards(result.newPoints, userNo);
               } else {
                 alert(`แลกไม่สำเร็จ: ${result.message}`);
               }
@@ -330,11 +337,18 @@
       }
     }
 
-    let user = null;
-
-    window.onload = () => {
-      user = loadUserData();
-      if (user) fetchRewards(user.points ?? 0, user.no ?? '');
+    window.onload = async () => {
+      const user = loadUserData();
+      if (!user) return;
+      const points = await fetchUserPoints(user.no);
+      if (points !== null) {
+        document.getElementById('user-points').textContent = points;
+        fetchRewards(points, user.no);
+      } else {
+        alert('ไม่สามารถโหลดแต้มจากระบบได้ กรุณาลองใหม่ภายหลัง');
+        document.getElementById('user-points').textContent = '0';
+        fetchRewards(0, user.no);
+      }
     };
   </script>
 </body>
