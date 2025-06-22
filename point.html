@@ -3,108 +3,162 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>แต้มสะสม</title>
+  <title>แต้มสะสม | ระบบของคุณ</title>
   <style>
-    /* ธีมสีฟ้าน้ำเงิน สไตล์เดียวกับหน้าก่อน */
-    body {
-      font-family: "Kanit", sans-serif, Arial, Helvetica, sans-serif;
-      background: linear-gradient(to bottom right, #d0e7ff, #79a6ff);
-      color: #003366;
-      margin: 0;
-      padding: 20px;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
+    @import url('https://fonts.googleapis.com/css2?family=Kanit:wght@400;700&display=swap');
+
+    /* โทนสีฟ้า-น้ำเงิน */
+    :root {
+      --color-primary: #1e40af;   /* น้ำเงินเข้ม */
+      --color-secondary: #3b82f6; /* ฟ้า */
+      --color-bg: #f0f5ff;
+      --color-text: #1e293b;
+      --color-card-bg: #ffffff;
+      --shadow: rgba(30, 64, 175, 0.15);
     }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      padding: 30px 15px;
+      background-color: var(--color-bg);
+      font-family: 'Kanit', sans-serif, Arial, sans-serif;
+      color: var(--color-text);
+      display: flex;
+      justify-content: center;
+      min-height: 100vh;
+    }
+
     .container {
-      background: white;
-      border-radius: 12px;
-      box-shadow: 0 8px 16px rgba(0, 85, 204, 0.25);
       max-width: 480px;
       width: 100%;
+      background: var(--color-card-bg);
+      border-radius: 20px;
       padding: 30px 25px 40px;
-      box-sizing: border-box;
+      box-shadow: 0 12px 24px var(--shadow);
       text-align: center;
     }
 
     h1 {
       margin-top: 0;
-      color: #003366;
       font-weight: 700;
+      font-size: 2rem;
+      color: var(--color-primary);
+      margin-bottom: 30px;
+      letter-spacing: 0.06em;
     }
 
     .userinfo {
-      margin-bottom: 30px;
-      font-size: 1.1em;
-      line-height: 1.6;
-      color: #004080;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px 30px;
+      font-weight: 500;
+      font-size: 1.15rem;
+      margin-bottom: 40px;
+      color: var(--color-primary);
+      text-align: left;
     }
 
     .userinfo div {
-      margin: 6px 0;
+      padding: 10px 16px;
+      background-color: var(--color-bg);
+      border-radius: 12px;
+      box-shadow: 0 6px 12px rgba(59, 130, 246, 0.1);
+      transition: background-color 0.3s ease;
+    }
+    .userinfo div:hover {
+      background-color: var(--color-secondary);
+      color: white;
+      cursor: default;
     }
 
+    /* กล่องแต้ม */
     .points-box {
-      background: #4a90e2; /* น้ำเงินเข้ม */
+      background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
       color: white;
-      font-size: 3em;
-      font-weight: 700;
-      padding: 30px 20px;
-      border-radius: 20px;
-      box-shadow: 0 8px 15px rgba(26, 117, 255, 0.7);
+      font-size: 4rem;
+      font-weight: 900;
+      padding: 40px 20px;
+      border-radius: 30px;
+      box-shadow: 0 15px 30px rgba(30, 64, 175, 0.5);
       user-select: none;
-      letter-spacing: 3px;
-      margin: 0 auto;
-      width: fit-content;
-      min-width: 180px;
+      letter-spacing: 6px;
+      display: inline-block;
+      min-width: 200px;
+      position: relative;
+      transition: transform 0.3s ease;
+    }
+    .points-box:hover {
+      transform: scale(1.07);
+      box-shadow: 0 25px 45px rgba(30, 64, 175, 0.7);
+    }
+
+    .points-label {
+      position: absolute;
+      top: 14px;
+      right: 20px;
+      font-size: 1rem;
+      font-weight: 600;
+      opacity: 0.85;
+      letter-spacing: 2px;
     }
 
     /* Responsive */
     @media (max-width: 480px) {
-      .container {
-        padding: 20px 15px 30px;
+      .userinfo {
+        grid-template-columns: 1fr;
+        font-size: 1rem;
       }
       .points-box {
-        font-size: 2.4em;
-        padding: 25px 15px;
+        font-size: 3rem;
         min-width: 150px;
+        padding: 30px 15px;
+      }
+      .points-label {
+        top: 10px;
+        right: 15px;
+        font-size: 0.85rem;
       }
     }
   </style>
 </head>
 <body>
-  <div class="container">
+  <main class="container" role="main" aria-label="ข้อมูลผู้ใช้และแต้มสะสม">
     <h1>ข้อมูลส่วนตัว</h1>
-    <div class="userinfo">
-      <div>ชื่อ: <span id="user-name">-</span></div>
-      <div>นามสกุล: <span id="user-lastname">-</span></div>
-      <div>เลขที่: <span id="user-no">-</span></div>
-      <div>เลขประจำตัว: <span id="user-id">-</span></div>
-    </div>
 
-    <div class="points-box" title="แต้มสะสมของคุณ">
-      <span id="user-points">0</span> คะแนน
-    </div>
-  </div>
+    <section class="userinfo" aria-label="รายละเอียดผู้ใช้">
+      <div><strong>ชื่อ:</strong> <span id="user-name">-</span></div>
+      <div><strong>นามสกุล:</strong> <span id="user-lastname">-</span></div>
+      <div><strong>เลขที่:</strong> <span id="user-no">-</span></div>
+      <div><strong>เลขประจำตัว:</strong> <span id="user-id">-</span></div>
+    </section>
+
+    <section aria-label="แต้มสะสมของผู้ใช้">
+      <div class="points-box" title="แต้มสะสมของคุณ">
+        <span id="user-points">0</span>
+        <div class="points-label">คะแนน</div>
+      </div>
+    </section>
+  </main>
 
   <script>
-    // โหลดข้อมูลผู้ใช้จาก localStorage มาแสดง
     function loadUserData() {
-      const userDataStr = localStorage.getItem('user');
+      const userDataStr = localStorage.getItem('userData');
       if (!userDataStr) {
         alert('ไม่พบข้อมูลผู้ใช้ กรุณาล็อกอินก่อน');
         return;
       }
       const userData = JSON.parse(userDataStr);
 
-      document.getElementById('user-name').textContent = userData.firstname || '-';
+      document.getElementById('user-name').textContent = userData.firstName || '-';
       document.getElementById('user-lastname').textContent = userData.lastName || '-';
       document.getElementById('user-no').textContent = userData.no || '-';
-      document.getElementById('user-id').textContent = userData.studentId || '-';
+      document.getElementById('user-id').textContent = userData.userId || '-';
       document.getElementById('user-points').textContent = userData.points ?? 0;
     }
-
     window.onload = loadUserData;
   </script>
 </body>
