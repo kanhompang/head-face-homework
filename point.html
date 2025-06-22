@@ -26,6 +26,7 @@
       color: var(--color-text);
       display: flex;
       justify-content: center;
+      min-height: 100vh;
     }
 
     .container {
@@ -35,6 +36,8 @@
       border-radius: 20px;
       padding: 30px 25px;
       box-shadow: 0 12px 24px var(--shadow);
+      display: flex;
+      flex-direction: column;
     }
 
     h1 {
@@ -84,13 +87,25 @@
 
     /* รางวัล */
     .reward-section {
-      margin-top: 40px;
+      margin-top: 10px;
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .reward-section h2 {
+      color: var(--color-primary);
+      font-size: 1.3rem;
+      margin-bottom: 15px;
     }
 
     .reward-grid {
       display: flex;
       flex-direction: column;
       gap: 20px;
+      overflow-y: auto;
+      max-height: 400px;
+      padding-right: 5px;
     }
 
     .reward-card {
@@ -100,6 +115,11 @@
       border-radius: 16px;
       padding: 15px;
       box-shadow: 0 4px 12px rgba(0, 100, 255, 0.1);
+      transition: box-shadow 0.3s ease;
+    }
+
+    .reward-card:hover:not(.disabled) {
+      box-shadow: 0 6px 20px rgba(0, 100, 255, 0.3);
     }
 
     .reward-img {
@@ -109,22 +129,26 @@
       background-color: #ddd;
       object-fit: cover;
       margin-right: 16px;
+      flex-shrink: 0;
     }
 
     .reward-info {
       flex: 1;
+      user-select: none;
     }
 
     .reward-name {
       font-size: 1.1rem;
       font-weight: 600;
       color: #1e3a8a;
+      margin-bottom: 4px;
     }
 
     .reward-desc {
       font-size: 0.95rem;
       color: #475569;
-      margin: 4px 0 6px;
+      margin-bottom: 6px;
+      white-space: pre-line;
     }
 
     .reward-meta {
@@ -139,6 +163,7 @@
 
     .disabled {
       opacity: 0.5;
+      pointer-events: none;
     }
 
     .btn-redeem {
@@ -150,6 +175,8 @@
       font-weight: bold;
       cursor: pointer;
       transition: background 0.3s;
+      flex-shrink: 0;
+      user-select: none;
     }
 
     .btn-redeem:disabled {
@@ -173,12 +200,12 @@
 
       .btn-redeem {
         width: 100%;
+        margin-top: 10px;
       }
     }
   </style>
 </head>
 <body>
-  <img src="https://drive.google.com/uc?id=1VcXBS4GeP8OYdfLBayiXNm39hx0Oc6Bm" width="150" alt="รางวัล">
   <div class="container">
     <h1>ข้อมูลส่วนตัว</h1>
     <div class="userinfo">
@@ -188,13 +215,13 @@
       <div>เลขประจำตัว: <span id="user-id">-</span></div>
     </div>
 
-    <div class="points-box">
-      <div id="user-points">0</div>
+    <div class="points-box" aria-label="คะแนนสะสม">
+      <div id="user-points" aria-live="polite">0</div>
       <div class="points-label">คะแนนสะสม</div>
     </div>
 
     <div class="reward-section">
-      <h2 style="color:#1d4ed8; font-size: 1.3rem;">ของรางวัล</h2>
+      <h2>ของรางวัล</h2>
       <div class="reward-grid" id="reward-list">
         <div>กำลังโหลดรายการรางวัล...</div>
       </div>
@@ -202,8 +229,9 @@
   </div>
 
   <script>
-    const GAS_URL = 'https://script.google.com/macros/s/AKfycbxQyMf_zMNuZoa_JLqa2S5LJYgxd1HwDfnMw-3_FtMH-mN2Db72O4xfqpU17zg2mebPkw/exec'; // แทนที่ด้วย URL ของคุณ
+    const GAS_URL = 'https://script.google.com/macros/s/AKfycbxQyMf_zMNuZoa_JLqa2S5LJYgxd1HwDfnMw-3_FtMH-mN2Db72O4xfqpU17zg2mebPkw/exec'; // เปลี่ยนเป็น URL GAS ของคุณ
 
+    // โหลดข้อมูลผู้ใช้จาก localStorage
     function loadUserData() {
       const userDataStr = localStorage.getItem('user');
       if (!userDataStr) {
@@ -219,6 +247,7 @@
       return userData;
     }
 
+    // ดึงข้อมูลรางวัลจาก GAS
     async function fetchRewards(userPoints, userNo) {
       try {
         const res = await fetch(`${GAS_URL}?action=getRewards`);
@@ -243,6 +272,7 @@
 
           const img = document.createElement('img');
           img.className = 'reward-img';
+          img.alt = r.name;
           img.src = (r.type === 'D')
             ? 'https://cdn-icons-png.flaticon.com/512/1040/1040230.png'
             : (r.imageUrl || 'https://cdn-icons-png.flaticon.com/512/847/847969.png');
@@ -263,7 +293,31 @@
           button.className = 'btn-redeem';
           button.textContent = hasClaimed ? 'แลกแล้ว' : 'แลกรางวัล';
           button.disabled = !canRedeem;
-          // TODO: ใส่ event แลกของจริงภายหลัง
+
+          // ฟังก์ชันแลกรางวัล กดปุ่มแล้วเรียก GAS อัปเดตแต้มและสถานะ
+          button.onclick = async () => {
+            if (!confirm(`คุณต้องการแลกรางวัล "${r.name}" ใช่หรือไม่?`)) return;
+
+            try {
+              const res = await fetch(`${GAS_URL}?action=redeemReward&no=${user.no}&rewardId=${r.id}&points=${user.points}`);
+              const result = await res.json();
+
+              if (result.success) {
+                alert("แลกรางวัลสำเร็จ!");
+                // อัปเดตแต้มใน localStorage และบนหน้าเว็บ
+                user.points = result.newPoints;
+                localStorage.setItem("user", JSON.stringify(user));
+                document.getElementById('user-points').textContent = user.points;
+                // รีโหลดรางวัลใหม่
+                fetchRewards(user.points, user.no);
+              } else {
+                alert(`แลกไม่สำเร็จ: ${result.message}`);
+              }
+            } catch (err) {
+              console.error(err);
+              alert("เกิดข้อผิดพลาดในการแลกรางวัล");
+            }
+          };
 
           card.appendChild(img);
           card.appendChild(info);
@@ -276,8 +330,10 @@
       }
     }
 
+    let user = null;
+
     window.onload = () => {
-      const user = loadUserData();
+      user = loadUserData();
       if (user) fetchRewards(user.points ?? 0, user.no ?? '');
     };
   </script>
